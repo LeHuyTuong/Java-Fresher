@@ -20,6 +20,7 @@ target/
 *.ipr
 
 ### NetBeans ###
+!Java intern/
 /nbproject/private/
 /nbbuild/
 /dist/
