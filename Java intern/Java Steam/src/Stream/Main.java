@@ -1,3 +1,5 @@
+package Stream;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,14 +11,14 @@ public class Main {
     public static void main(String[] args) {
 
         List<Player> players = new ArrayList<>() ;
-        players. add(new Player ( "Joe Bambrick",  "Northern Ireland", 629)) ;
+        players. add(new Player( "Joe Bambrick",  "Northern Ireland", 629)) ;
         players.add(new Player(  "Lionel Messi",  "Argentina", 838));
         players. add(new Player(  "Cristiano Ronaldo", "Portugal", 900));
-        players. add(new Player (  "Robert Lewandowski",  "Poland",  634)) ;
+        players. add(new Player(  "Robert Lewandowski",  "Poland",  634)) ;
         players.add(new Player(  "Romario",  "Brazil", 755));
-        players. add(new Player (  "Jimmy Jones",  "Northern Ireland",  648));
-        players.add(new Player ( "Ferenc Puskas",  "Hungary",  724)) ;
-        players.add(new Player (  "Gerd Müller",  "Germany", 634)) ;
+        players. add(new Player(  "Jimmy Jones",  "Northern Ireland",  648));
+        players.add(new Player( "Ferenc Puskas",  "Hungary",  724)) ;
+        players.add(new Player(  "Gerd Müller",  "Germany", 634)) ;
 
             // start con ca
         List<Player> filterPlayers = players.stream() // start Stream cho player vao trong 1 dong suoi

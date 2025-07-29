@@ -1,3 +1,5 @@
+package Stream;
+
 class Player {
     String name;
     String nationality;
