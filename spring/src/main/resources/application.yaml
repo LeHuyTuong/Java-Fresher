@@ -1,5 +1,5 @@
 server:
-  port = 8007
+  port: 8001
 
 player:
   age: 20
@@ -15,3 +15,7 @@ database:
   username: username
   port: 3306
   password: password
+
+spring:
+  profiles:
+    active: pro  # dung de set profile dung goi nao de chay file yaml
