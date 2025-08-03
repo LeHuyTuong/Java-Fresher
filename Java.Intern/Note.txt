@@ -1,0 +1,26 @@
+1.ThreadPool - quản lý luồng
+*Mục đích :
+-Giảm overhead khi phải tạo/deploy thread liên tục (Tái sử dụng lại Thread khai báo ra 10 thì dùng 10 , thằng 1 xong thì lấy lại nó đắp chô thằng 11 - 12 )
+*Ứng dụng:
+-Web Server xử lý nhiều request
+-Xử lý task bất đồng bộ (executorService, Scheduled ExecutorServer)
+*Nhược điểm
+-Dùng chung luồng -> dễ share dữ liệu vô tình nếu không cẩn thận gây ra deadlock / race condition
+-Nếu không reset state dễ dính memory leak 
+
+
+2.ThreadLocal - quản lý dữ liệu theo luồng
+*Mục đích :
+Tạo ra biến toàn cục theo từng thread riêng biệt (1 2 dùng local riêng tính toán tốt nhưng đến cuối sẽ có thể bị tràn ram )
+*Ứng dụng :
+-Lưu session/user info trong mỗi thread xử lý HTTP Request
+-Lưu context tradeId/log Id trong microservices
+-JDBC Connection context trong transaction
+*Nhược điểm :
+-Memory Leak cực kì nguy hiểm nhất là kết hợp với threadpool (do thread sống dai mà threadlocal không được remove() )
+-Không có giao tiếp giữa các thread -> không dùng để chia sẻ dữ liệu 
+
+
+*Mask:
+ThreadPool để tiết kiệm tài nguyên CPU 🧠
+ThreadLocal để tách biệt dữ liệu logic cho từng thread 🔐

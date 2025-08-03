@@ -1,4 +1,4 @@
-package Thread;
+package src.Thread;
 
 import java.time.LocalTime;
 import java.util.Random;
