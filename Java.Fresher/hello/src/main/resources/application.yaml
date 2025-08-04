@@ -1,21 +1,26 @@
-server:
-  port: 8001
-
-player:
-  age: 20
-  address: HCM
-  maps: {k1: v1, k2: v2}   # kieu map
-  lists:     # kieu lists
-    - list1 
-    - list2
-  isActive: true     # kieu boolean
-  birth: 2024/08/08  # kieu date
-database:
-  host: host
-  username: username
-  port: 3306
-  password: password
-
 spring:
-  profiles:
-    active: pro  # dung de set profile dung goi nao de chay file yaml
+  application:
+    name: springboot-nyano
+
+  datasource:
+    url: jdbc:mysql://localhost:3307/shopdevgo
+
+    username: root
+    password: Tuong2005@
+    driver-class-name: com.mysql.jdbc.Driver
+
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      #none : ko có cấu hình bỏ qua, an toàn , ko cho hibernate can thiệp vào DB
+      #validate: hibernate kiểm tra lược đồ CSDL của mình có khớp với các đối tượng trong entity hay 0
+       # nếu khác thì sẽ ném exception
+      #create  tạo và xóa lại lược đồ CSDL lại từ đầu -> tất cả xóa phải tạo lại (Nguy Hiểm nhất)
+      #createdrop : dừng lại sẽ xóa
+      #update: tự động cập nhật CSDL khớp với Entity , tiện khi thay đổi cấu trúc Table
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true

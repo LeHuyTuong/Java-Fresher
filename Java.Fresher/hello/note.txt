@@ -1,0 +1,4 @@
+Mục tiêu	                           Cách làm đúng
+Kết nối từ máy thật	                    mysql -h 127.0.0.1 -P 3307 -u tuong -p
+Kết nối từ container	                mysql -h 127.0.0.1 -P 3306 -u root -p
+Spring Boot kết nối MySQL container	    jdbc:mysql://pre_mysql_container:3306/dbname

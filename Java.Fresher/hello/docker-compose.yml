@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: pre_mysql_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Tuong2005@
+      MYSQL_DATABASE: shopdevgo
+      MYSQL_USER: tuong             # ✅ tên user khác root
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3307:3306"                   # ✅ đúng: HOST:CONTAINER
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
