@@ -38,17 +38,10 @@ jsp
 -
 -number THREAD
 jc number md VM.native_memory summary
-Để lấy thông tin chi tiết về:
-Thread Arena
-Class Metadata
-Java Heap
-Code Cache
-Thread Stack
 Phân tích summary,Cơ chế snapshot, lưu vào bộ dữ liệu mỗi giai đoạn chụp lại 1 lần
+
 Ưu điểm
 tạo nhiều thread lên cả triệu giúp tối ưu tốc độ
 Nhược điểm
 Tiêu tốn nhiều ram nếu làm sai cách
 Nếu dùng để cho dịch vụ ít người thì siêu tốn tài nguyên
-Tốc độ tính toán công việc nặng thì virtual thread thua 1 ít ngang nhau platform thread
-Còn tính toán nhẹ mà nhiều thì virtual thread thắng nhanh gấp 3 lần
