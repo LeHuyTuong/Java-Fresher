@@ -1,4 +1,4 @@
-package com.learn.heath;
+package com.learn.healthy;
 
 import com.learn.heath.core.BmiCalculator;
 
