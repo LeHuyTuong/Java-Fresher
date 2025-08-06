@@ -23,7 +23,7 @@ public interface UserRepository  extends JpaRepository<UserEntity, Long> , JpaSp
     // userNameAnduserEmail - check xem entity co thuoc tinh userEmail ko
     // where userName = ?1 and userEmail = ?1
 
-    UserEntity findbyUserNameAndUserEmail(String userName,String userEmail);
+    UserEntity findByUserNameAndUserEmail(String userName,String userEmail);
         // Derived Query (Method name-based)
     //userName
     UserEntity findByUserName(String userName);
