@@ -1,7 +1,7 @@
 package com.tuonglh.superapp.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Nationalized;
+//import org.hibernate.annotations.Nationalized;
 
 //import jakarta.persistence.Column;
 //import jakarta.persistence.Entity;
@@ -14,12 +14,15 @@ import org.hibernate.annotations.Nationalized;
 @Table(name = "Student") // nếu ko có khai báo này th mapping thì mắc định lấy tên class thành tên table
 public class Student {
     @Id
-    @Column(name ="Id") // neu ko co , thi mặc định lấy tên field làm tên cột
+    @Column(name ="Id", columnDefinition = "CHAR(8)") // neu ko co , thi mặc định lấy tên field làm tên cột
     private String id; //camelCase, id tự nhập (Tự tăng tính sau)
 
-    @Column(name = "Name", nullable = false, length = 50)
-    @Nationalized // thieu khai bao nay thif string -> varchar ko luu tieng viet co dau, de string -> nvarchar thi can them khai bao @Nationalized
+    @Column(name = "Name", nullable = false, length = 50, columnDefinition = "NVARCHAR(50)")
+    //@Nationalized // thieu khai bao nay thif string -> varchar ko luu tieng viet co dau, de string -> nvarchar thi can them khai bao @Nationalized
     // neu ko lam tieng viet se dau ? thay the cho dau '\?
+    //TA DÙNG ONATIONALIZED CỦA HIBERNATE SẾ MẤT ĐI TÍNH KHẢ CHUYỂN KHI
+    //CODE NAY KO THE CHOI DC VOI NHA THAU ECLIPSELINK
+    //ĐỘ VARCHAR CHƠI VỚI NHIỀU NHÀ CUNG CẤP ORM/JPA QUA COLUMNDEFINTION
     private String name;
 
     @Column(name ="Yob" , nullable = false)
