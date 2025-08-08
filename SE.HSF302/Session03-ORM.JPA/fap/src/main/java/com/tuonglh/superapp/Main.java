@@ -17,14 +17,71 @@ public class Main {
         //insertStudents(emf);
         //getAllStudents(emf);
         //insertLectures(emf);
-        getAllLectures(emf);
+        //getAllLectures(emf);
+        //searchLectures(emf);
+        //remove();
+        update();
+        findById();
         emf.close(); // đóng sau khi dùng xong
+    }
+
+    //EntityManager là ông sếp quản lí các Entity ~ chính là các class có @Entity và
+    //quản Lí các object tạo từ class Entity: sếp có thể thêm persit(); xoá remove();
+    //cập nhật merge (); tìm theo PK find(): Lí do có hàm tìm theo key, vì ta luôn có nhu
+    //cầu thao tac tren 1 dong/row/record cu the trong table
+    //SWP admin, có màn hình quản lí user, phân loại, show table có nhiều dòng, phân
+    //        trang, filter, cuối dòng có cột Actions: Update | Delete -> xử lí đúng 1 dòng đang
+    //select -> theo PK
+    //ngoài ra có hàm createQuery() tìm linh hoạt theo điều kiện nào đó//EntityManager là ông sếp quản lí các Entity ~ chính là các class có @Entity và
+    //quản Lí các object tạo từ class Entity: sếp có thể thêm persit(); xoá remove();
+    //cập nhật merge (); tìm theo PK find(): Lí do có hàm tìm theo key, vì ta luôn có nhu
+    //cầu thao tac tren 1 dong/row/record cu the trong table
+    ////SWP admin, có màn hình quản lí user, phân loại, show table có nhiều dòng, phân
+    //trang, filter, cuối dòng có cột Actions: Update | Delete -> xử lí đúng 1 dòng đang
+    //select -> theo PK
+
+    /// /ngoài ra có hàm createQuery() tìm linh hoạt theo điều kiện nào đó
+
+
+    //KHI LÀM CÁC HÀNH ĐỘNG, XOÁ, SỬA, THÊM, ẢNH HƯỞNG VÀ THAY ĐỔI HIỆN TRẠNG DB
+    //TA PHẢI NHÉ NÓ VÀO TRANSACTION ĐỂ THEO DỠi
+
+    public static void update() {
+        EntityManager em = emf.createEntityManager();
+        // tim the key chi tra ra 1 dong
+        Lecturer x = em.find(Lecturer.class, 2);
+        Student y = em.find(Student.class, "SE2");
+        em.getTransaction().begin();
+        x.setSalary(25_000_000);
+        y.setGpa(9.2);
+        em.getTransaction().commit();
+        System.out.println("Update Successfully");
+    }
+    public static void remove() {
+        EntityManager em = emf.createEntityManager();
+        // tim the key chi tra ra 1 dong
+        em.getTransaction().begin();
+        Lecturer r = em.find(Lecturer.class, 1L);
+        Student s = em.find(Student.class, "SE1");
+        em.remove(r);
+        em.remove(s);
+        em.getTransaction().commit();
+        System.out.println("Delete successfully !");
+    }
+
+    public static void findById() {
+        EntityManager em = emf.createEntityManager();
+        // tim the key chi tra ra 1 dong
+        Lecturer r = em.find(Lecturer.class, 2);
+        Student s = em.find(Student.class, "SE2");
+        System.out.println("Lecturer info" + r);
+        System.out.println("Student info" + s);
     }
 
     public static void insertLectures(EntityManagerFactory emf) {
         EntityManager em = emf.createEntityManager();
-        Lecturer  an = new Lecturer("An Nguyen" , 1990, 20_000_000);
-        Lecturer  tuong = new Lecturer("Tuong Le" , 1990, 20_000_000);
+        Lecturer  an = new Lecturer("An Nguyen" , 1991, 20_000_000);
+        Lecturer  tuong = new Lecturer("Tuong Le" , 1991, 20_000_000);
         //VÌ CÓ THAY ĐỒI TRÊN CSDL (TABLE, DATA) NÊN TA CẦN THEO DÕI CHẶT CHẾ CÁC
         //    CÂU LENH -> DÙNG KHÁI NIEM TRANSACTION: DO ALL OR NOTHING
         //HOẶC TẤT CẢ, HOẶC KO GÌ CẢ. NGUYÊN LÝ ACID CỦA TRANSACTION
@@ -43,6 +100,17 @@ public class Main {
         em.close();
     }
 
+
+    public static void searchLectures(EntityManagerFactory emf) {
+        EntityManager em = emf.createEntityManager();
+        List<Lecturer> list = em.createQuery("Select u from Lecturer u Where u.yob = :pYob ", Lecturer.class).setParameter("pYob", 1991).getResultList();
+        //String msg = "Hello";
+        //String msgU = msg.toString();
+        //int l = msg.toUpperCase().toLowerCase().toUpperCase().toLowerCase().length();
+        for (Lecturer l : list) {
+            System.out.println(l);
+        }
+    }
 
 
     //WHERE
@@ -64,7 +132,7 @@ public class Main {
         //DÍNH ĐẾN KHÁI NIỆM LẬP TRÌNH HÀM - FUNCTIONAL PROGRAMMING
         //HÀM ĐC XEM LÀ 1 DATA, VÀ HÀM LÀ THAM SỐ ĐỂ TRUYỀN VÀO HÀM KHÁC
 
-        System.out.println("The list of students printed by lambda expression");
+        System.out.println("The list of lecturer printed by lambda expression");
         list.forEach(x -> {
             System.out.println(x);
         });
@@ -88,8 +156,8 @@ public class Main {
     public static void insertStudents(EntityManagerFactory emf) {
         EntityManager em = emf.createEntityManager();
 
-        Student an = new Student("SE1", "AnNguyen", 2005, 8.8);
-        Student tuong = new Student("SE2", "TuongNgu", 2005, 9.2);
+        Student an = new Student("SE4", "AnNguyen", 2005, 8.8);
+        Student tuong = new Student("SE5", "TuongNgu", 2005, 9.2);
 
         em.getTransaction().begin();
         em.persist(an);
