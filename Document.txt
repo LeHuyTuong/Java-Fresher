@@ -1,0 +1,56 @@
+1.Nguyên Lí chữ S trong SOLID 
+ SRP (Single Responsibility Principle)
+
+ “Mỗi class/module chỉ nên có một lý do duy nhất để thay đổi.”
+
+Nói cách khác: Một class chỉ tập trung giải quyết một trách nhiệm duy nhất.
+
+Nếu bạn nhét nhiều trách nhiệm → class dễ bị phình to, khó bảo trì.
+
+2. Áp dụng 
+// Class này chỉ lo chuyện gửi email
+public class EmailSender {
+    public void send(String to, String message) {
+        // code gửi email
+    }
+}
+
+Class trên chỉ có 1 trách nhiệm duy nhất: gửi email.
+Nếu có rule mới về email (SMTP, template, retry…) → chỉ sửa class này.
+👉 Đây chính là SRP chuẩn chỉnh.
+
+II. Nguyên Lí chữ O trong SOLID
+-Open/Close principle. OCP
+-Open for extension, closed for modification 
+- CỚI MỚ CHO VIỆC MỚ RỘNG CODE - THÊM CODE CHO ĐIỀU CHƯA CÓ TRƯỚC ĐO
+ĐÓNG LẠI CHO VIỆC CHỈNH SỬA CODE ĐÃ CÓ, TRÁNH SỬA CODE CŨ NẾU CÓ THỂ
+"NẾU CÓ NHU CẦU THÊM MỚI TÍNH NĂNG, THÊM MỚI CODE, CỐ GẮNG KO ĐỤNG CODE CŨ, MÀ CHƠI
+ĐC CODE MỚI"
+Thêm code mới ko sửa cũ , vẫn chạy ngon 
+- THÊM TÍNH NĂNG GỬI SMS, GỬI WHATSAPP, MÀ THĂNG USERSERVICE KO CẦN CHỈNH CODE
+MÀ VẪN CHƠI ĐC VỚI 2 THNG, THẬM CHÍ LÀ NHIỀU THĂNG MỚI HƠN TRONG TƯƠNG LAI
+
+>>>HOW ? 
+-> thay vì phụ thuộc vào cái cụ thể, thì phụ thuộc vào chung chung 
+** Trong OOP. có 2 cái chung chung ko cụ thể 
+		+ Abstract Class
+		+ Interface - là 1 dạng class cha, class chứa hàm ko có code 
+				( sau này có code nhưng mang ý nghĩa khác )
+>>> 1 class khi viết Code, muốn nó thích ứng được sự mở rộng trong tương lai , cấm hard code
+-> phụ thuộc vào 1 cái interface 
+
+public class A{
+ private InterfaceB bObj; // dependency 
+}
+
+// chích qua contructor. setter , Field (Reflection tránh vi phạm encapsulation)
+public A(InterfaceB bObj){
+this.bObj = bObj;
+}
+
+bObj = new 1 class nào có code, InterfaceB ko chứa code 
+// phải có 1 vài class viết code cho cái InterfaceB , implemtns InterfaceB
+// cứ thêm class thuộc InterB là ko cần sửa A, mà A chơi all các class từ B
+// MỞ class thuộc InterB, đóng với việc chỉnh Code class A 
+
+ 
