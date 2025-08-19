@@ -2,6 +2,8 @@ package com.spring.hello.repository;
 
 import com.spring.hello.entity.user.UserEntity;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,8 +16,12 @@ import java.util.List;
 
 //@RepositoryDefinition(domainClass = UserEntity.class,idClass = Long.class)
 public interface UserRepository  extends JpaRepository<UserEntity, Long> , JpaSpecificationExecutor<UserEntity> { //cach 1 la extend jpa de su dung jpa , <entity , kieu du lieuj gi >
-    //find username vs userEmail
 
+    //user pageabble
+    Page<UserEntity> findByUserName(String username,Pageable pageable);
+
+    Page<UserEntity> findByUserNameContaining(String userName, Pageable pageable);
+    //find username vs userEmail
     // thuoc tinh nay phai duoc cung voi thuoc tinh duoc khai bao
     // findbyUserNameAndUserEmail
     // UserNameAndUserEmail khi check se chuyen chu cai dau viet hoa thanh viet thuong
