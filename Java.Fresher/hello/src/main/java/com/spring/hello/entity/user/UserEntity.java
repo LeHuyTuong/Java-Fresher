@@ -1,10 +1,14 @@
 package com.spring.hello.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.spring.hello.entity.feed.FeedEntity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
+import java.util.List;
 
 @Data
 @Entity
@@ -24,4 +28,13 @@ public class UserEntity {
     @JsonProperty("email")
     @Column(columnDefinition = "varchar(255) comment 'user email'", nullable = false, unique = true)
     private String userEmail;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch =  FetchType.LAZY)
+    @ToString.Exclude
+    private List<FeedEntity> feedList;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "cccd_id")
+    private CCCDEntity cccd;
+
 }
