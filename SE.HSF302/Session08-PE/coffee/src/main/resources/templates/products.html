@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List Product</title>
+</head>
+<body>
+<h1>List Product System </h1>
+
+<h3> The list of Coffe products</h3>
+<table>
+    <thead>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Actions (Update|Delete)</th>
+
+    </thead>
+    <tbody>
+        <tr th:each="x : ${productList}">
+            <td th:text="${x.id}"></td>
+            <td th:text="${x.name}"></td>
+            <td th:text="${x.price}"></td>
+            <td>
+                <a th:href="@{'/products/edit/' + ${x.id}}">Update</a>
+                <a th:href="@{'/products/delete/' + ${x.id}}">Delete</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>
