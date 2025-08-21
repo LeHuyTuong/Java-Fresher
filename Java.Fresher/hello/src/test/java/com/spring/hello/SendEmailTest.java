@@ -33,7 +33,7 @@ public class SendEmailTest {
         String content = "OTP is 123";
         // Lấy file HTML trong folder resources/templates/ email/otp-auth.html
         // ClassPathResource: dùng để load file từ thư mục resources
-        Resource resource = new ClassPathResource("/templates/ email/otp-auth.html");
+        Resource resource = new ClassPathResource("/templates/email/otp-auth.html");
         // Đọc toàn bộ nội dung file HTML thành String
         // resource.getInputStream() → đọc file
         // readAllBytes() → đọc hết thành mảng byte
@@ -43,6 +43,4 @@ public class SendEmailTest {
         // Tham số: email người nhận, subject, nội dung HTML
         emailSenderUtil.sendHtmlEmail(to, subject, htmlContent);
     }
-
-
 }

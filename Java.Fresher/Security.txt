@@ -1,0 +1,1 @@
+Xác thực basic (Authetication HTTP) và Verify Token là các phương thức xác thực được cung cấp bởi chuẩn giao thức HTTP 
