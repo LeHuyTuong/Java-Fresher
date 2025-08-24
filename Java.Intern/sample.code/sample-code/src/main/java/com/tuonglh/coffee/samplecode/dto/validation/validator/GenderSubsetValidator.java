@@ -1,5 +1,7 @@
-package com.tuonglh.coffee.samplecode.util;
+package com.tuonglh.coffee.samplecode.dto.validation.validator;
 
+import com.tuonglh.coffee.samplecode.dto.validation.annotation.GenderSubset;
+import com.tuonglh.coffee.samplecode.model.enums.Gender;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

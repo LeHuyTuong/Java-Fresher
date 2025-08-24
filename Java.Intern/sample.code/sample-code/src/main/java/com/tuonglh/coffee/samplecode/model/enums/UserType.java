@@ -1,4 +1,4 @@
-package com.tuonglh.coffee.samplecode.util;
+package com.tuonglh.coffee.samplecode.model.enums;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -7,6 +7,6 @@ public enum UserType {
     ADMIN,
     @JsonProperty("user")
     USER,
-    @JsonProperty("OWNER")
+    @JsonProperty("owner")
     OWNER;
 }

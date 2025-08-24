@@ -1,5 +1,6 @@
-package com.tuonglh.coffee.samplecode.util;
+package com.tuonglh.coffee.samplecode.dto.validation.validator;
 
+import com.tuonglh.coffee.samplecode.dto.validation.annotation.EnumPattern;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -14,7 +15,7 @@ public class EnumPatternValidator implements ConstraintValidator<EnumPattern,Enu
     @Override
     public void initialize(EnumPattern constraintAnnotation) {
         try{
-            pattern = Pattern.compile(constraintAnnotation.regex()); // so sánh với reg
+            pattern = Pattern.compile(constraintAnnotation.regexp()); // so sánh với reg
         }catch(PatternSyntaxException e) {
             throw new IllegalArgumentException("Given regex is invalid");
         }

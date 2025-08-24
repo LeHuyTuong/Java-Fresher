@@ -1,4 +1,4 @@
-package com.tuonglh.coffee.samplecode.util;
+package com.tuonglh.coffee.samplecode.model.enums;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

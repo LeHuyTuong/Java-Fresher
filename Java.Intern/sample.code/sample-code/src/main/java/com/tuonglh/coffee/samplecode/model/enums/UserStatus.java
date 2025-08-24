@@ -1,12 +1,12 @@
-package com.tuonglh.coffee.samplecode.util;
+package com.tuonglh.coffee.samplecode.model.enums;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum UserStatus {
     @JsonProperty("active")
-    Active,
+    ACTIVE,
     @JsonProperty("inactive")
-    Inactive,
+    INACTIVE,
     @JsonProperty("none")
-    NONE
+    NONE;
 }
