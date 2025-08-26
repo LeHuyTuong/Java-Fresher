@@ -1,5 +1,7 @@
 package com.tuonglh.coffee.samplecode.controller;
 
+import com.tuonglh.coffee.samplecode.configuration.Translator;
+import com.tuonglh.coffee.samplecode.dto.request.SampleDTO;
 import com.tuonglh.coffee.samplecode.dto.request.UserRequestDTO;
 import com.tuonglh.coffee.samplecode.dto.response.ResponseData;
 import com.tuonglh.coffee.samplecode.dto.response.ResponseError;
@@ -8,6 +10,7 @@ import com.tuonglh.coffee.samplecode.exception.ResourceNotFoundException;
 import com.tuonglh.coffee.samplecode.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -19,9 +22,8 @@ import java.util.List;
 // và chúng ta không cần gán thêm @ResponseBody cho các method.
 @RequestMapping("/user") // mapping url
 @Validated
+@Slf4j
 public class UserController {
-
-
     /** @Operation(summary = "sumary", description = "description", responses = {
             @ApiResponse(responseCode = "201", description = "User added successfully",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -37,10 +39,19 @@ public class UserController {
                     )
             )
     }) */  // mô tả api
-
     @Autowired
     private UserService userService;
 
+//    @PostMapping(value="/")
+//    public ResponseData<Integer> createUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
+//        System.out.println("Request createUser" + userRequestDTO.getFirstName());
+//        SampleDTO sampleDTO = SampleDTO.builder()
+//                .id(1)
+//                .name("Tuong")
+//                .build();
+//        log.info("Request createUser" + userRequestDTO.getFirstName());
+//        return new ResponseData<>(HttpStatus.CREATED.value(), Translator.toLocale("user.add.success"), 1 );
+//    }
      @PostMapping(value = "/{userId}" )
     //@RequestMapping(method = RequestMethod.POST, path = "/" , headers = "apiKey=v1.0")
     public ResponseData<Integer> addUser(@Valid @RequestBody UserRequestDTO userDTO){
@@ -48,7 +59,7 @@ public class UserController {
          //return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Can not create user ");
          try{
              userService.addUser(userDTO);
-             return new ResponseData<>(HttpStatus.CREATED.value(),"User add successfully", 1 );
+             return new ResponseData<>(HttpStatus.CREATED.value(),Translator.toLocale("user.add.success"), 1 );
          }catch(ResourceNotFoundException e){
              return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Save failed ");
          }
@@ -57,7 +68,7 @@ public class UserController {
     @PutMapping("/{userId}")// sửa toàn bộ
     public ResponseData<Integer> updateUser(@PathVariable int userId, @Valid @RequestBody UserRequestDTO userDTO){
         System.out.println("Request update usedId= " + userId);
-        return new ResponseData<>(HttpStatus.ACCEPTED.value(), "User successfully updated", 1);
+        return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("user.update.success"), 1);
     }
 
     @PatchMapping("/{userId}")
