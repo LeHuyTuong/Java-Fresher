@@ -8,6 +8,8 @@ import com.tuonglh.coffee.samplecode.dto.response.ResponseError;
 import com.tuonglh.coffee.samplecode.dto.response.ResponseSuccess;
 import com.tuonglh.coffee.samplecode.exception.ResourceNotFoundException;
 import com.tuonglh.coffee.samplecode.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ import java.util.List;
 @RequestMapping("/user") // mapping url
 @Validated
 @Slf4j
+@Tag(name = "User Controller")  // đặt tên cho controller
 public class UserController {
     /** @Operation(summary = "sumary", description = "description", responses = {
             @ApiResponse(responseCode = "201", description = "User added successfully",
@@ -39,6 +42,10 @@ public class UserController {
                     )
             )
     }) */  // mô tả api
+
+
+
+
     @Autowired
     private UserService userService;
 
@@ -52,7 +59,9 @@ public class UserController {
 //        log.info("Request createUser" + userRequestDTO.getFirstName());
 //        return new ResponseData<>(HttpStatus.CREATED.value(), Translator.toLocale("user.add.success"), 1 );
 //    }
-     @PostMapping(value = "/{userId}" )
+
+    @Operation(summary = "Add user", description = "API create new user")
+    @PostMapping(value = "/{userId}" )
     //@RequestMapping(method = RequestMethod.POST, path = "/" , headers = "apiKey=v1.0")
     public ResponseData<Integer> addUser(@Valid @RequestBody UserRequestDTO userDTO){
          System.out.println("Request add user" + userDTO.getFirstName());
@@ -65,12 +74,14 @@ public class UserController {
          }
     }
 
+    @Operation(summary = "Update all user", description = "API Update user")
     @PutMapping("/{userId}")// sửa toàn bộ
     public ResponseData<Integer> updateUser(@PathVariable int userId, @Valid @RequestBody UserRequestDTO userDTO){
         System.out.println("Request update usedId= " + userId);
         return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("user.update.success"), 1);
     }
 
+    @Operation(summary = "Update status", description = "API update status")
     @PatchMapping("/{userId}")
     public ResponseData<Integer> changeUser(@PathVariable int userId, @RequestParam boolean status){  // request param bắt buọc truyền status
                             //Lấy giá trị từ path trong URL.
@@ -78,22 +89,26 @@ public class UserController {
         return new ResponseData<>(HttpStatus.ACCEPTED.value(), "User successfully updated", 1);
     }
 
+    @Operation(summary = "Delete user", description = "API delete user")
     @DeleteMapping("/{userId}")
     public ResponseData<Integer> deleteUser(@PathVariable @Min(value = 1, message = "userId must be greater than 0") int userId) {
         return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "User successfully deleted", 1);
     }
 
+    @Operation(summary = "Get user", description = "API get  user")
     @GetMapping("/{userId}")
     public ResponseData<UserRequestDTO> getUser(@PathVariable int userId){
         System.out.println("Request get user, userId= " + userId);
         return new ResponseData<>(HttpStatus.OK.value(), "user", new  UserRequestDTO("Tuong", "Hhehe", "phone", "email"));
     }
 
+    @Operation(summary = "Update user", description = "API Update user")
     @PatchMapping("/{userId}/status")
     public ResponseData<Integer> updateStatus(@Min(10) @PathVariable int userId, @RequestParam boolean status) {
         return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "User successfully updated", 1);
     }
 
+    @Operation(summary = "Get list of user", description = "API get list user")
     @GetMapping("/list")
     public ResponseData<List<UserRequestDTO>> getUserList(
             @RequestParam (required = false) String email,

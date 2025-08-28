@@ -1,0 +1,11 @@
+spring:
+    application:
+      name: tuong
+
+open:
+    api:
+        title: API document
+        version: 1.0.0
+        description: Mota API Service
+        serverUrl : http://localhost8080
+        serverName : server test

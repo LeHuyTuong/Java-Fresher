@@ -1,0 +1,24 @@
+@Getter @Setter hiểu r
+
+@Builder
+SampleDTO sampleDTO = SampleDTO.builder()
+                         .id(1)
+                         .name("Tuong")
+                         .build();
+                         add thêm thôi
+@NoArgsConstructor: tự động lưu
+@RequireddAgrsConstructor : constructor có tham số
+Với Lombok, @RequiredArgsConstructor chỉ tạo constructor cho các field final hoặc field được annotate @NonNull
+
+
+@EqualsAndHashCode(onlyExplicitlyIncluded = true )
+equals và hashcode sẽ ko dựa vào id hay name để tính toán nữa
+để tính toán thì cần phải @EqualsAndHashCode.Include
+
+@ToString : tạo ra ToString thôi
+
+@Slf4j : dùng để lưu log         log.info("Request createUser" + userRequestDTO.getFirstName());
+
+@NotNull thì not null hoi thêm contructor với tham số setter getter
+
+@
