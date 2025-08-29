@@ -1,0 +1,19 @@
+
+I.Build docker
+1.mvn clean package (-P dev) nếu dùng môi trường dev, có 4 môi trường khác nhau , rồi khi nào product thì build của product sau
+
+2.docker build -t api-image-sample .
+
+Build oke rồi thì
+
+II. Run
+
+docker run -it -p 80:80 --name api-container api-image-sample
+Cách này tìm image , ENTRYPOINT/CMD api-image-sample trong dockerfile
+-Ưu: là nhanh , chạy 1 lần
+-Nhược: ctrl C là mất luôn hoặc tắt terminal của ssh là đi luôn
+nhưng mà khó lặp lại dễ quên truyền biến môi trường .env bằng -e
+
+docker compose up -d (hoặc là docker-compose up -d tùy version)
+-Ưu: dễ lặp lại , chỉnh nhanh trong file
+-Nhược: phải biết tạo thêm file docker-compose.yml

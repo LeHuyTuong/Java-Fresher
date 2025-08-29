@@ -1,11 +1,14 @@
+server:
+  port: 80
 spring:
     application:
       name: tuong
-
+    profiles:
+      active: ${SPRING_PROFILES_ACTIVE:dev}
 open:
     api:
         title: API document
         version: 1.0.0
-        description: Mota API Service
-        serverUrl : http://localhost8080
+        description: Mo ta API Service
+        serverUrl : http://localhost:8080
         serverName : server test
