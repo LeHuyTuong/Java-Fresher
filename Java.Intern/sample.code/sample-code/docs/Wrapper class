@@ -1,0 +1,25 @@
+/*
+ * Long là wrapper class của kiểu nguyên thủy long.
+ * Dùng Long khi CẦN null (ví dụ id của entity trước khi persist).
+ * Nếu luôn có giá trị -> ưu tiên long (ít tốn bộ nhớ, không boxing/unboxing).
+ *
+ * Lưu ý về bộ nhớ:
+ * - Field (thuộc tính) của cả long lẫn Long đều nằm trên HEAP (vì thuộc về object).
+ * - Long là một OBJECT riêng: tốn thêm overhead và phát sinh GC.
+ * - "long ở stack, Long ở heap" là cách nói đơn giản hóa cho biến cục bộ; với field thì không đúng.
+ *
+ * Cạm bẫy:
+ * - Auto-unboxing có thể NPE: long x = dto.getId(); // getId() == null -> NPE
+ * - So sánh Long dùng equals(), đừng dùng == (== so sánh tham chiếu).
+ */
+ * Khi nào dùng cái nào?
+ JPA entity @Id: thường dùng Long để cho phép null trước khi persist (id được sinh sau).
+ DTO request (Create/Update): thường không gửi id; nếu có thể vắng mặt thì dùng Long (nullable).
+  DTO response / View model: nếu id luôn có, dùng long; nếu có thể thiếu, dùng Long.
+ Collections/Generics (Map/List): tham số hoá yêu cầu object → dùng Long (Java sẽ autobox từ long khi cần).
+
+*Hiệu năng
+ long: không cấp phát object, không GC, nhanh & ít bộ nhớ.
+ Long: có cấp phát (và cache giới hạn), có boxing/unboxing → chậm và tốn hơn một chút.
+
+Tóm lại: Dùng Long khi bạn cần thể hiện “không có giá trị” (null) hoặc làm việc với generics/ORM; còn lại ưu tiên long.

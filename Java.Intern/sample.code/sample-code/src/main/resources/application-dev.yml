@@ -1,0 +1,43 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    # JDBC URL đúng cho SQL Server. Đổi 'mydb' thành tên DB của bạn.
+    url:  jdbc:sqlserver://localhost:1433;databaseName=sampledbjava;encrypt=false;trustServerCertificate=true
+    username: sa
+    password: 12345
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: update           # Dev OK
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+        format_sql: true
+        default_schema: dbo      # đảm bảo dùng schema dbo
+        jdbc:
+          time_zone: UTC
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.transaction: DEBUG
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+openapi:
+  service:
+    api-docs: api-service
+    server: http://localhost:${server.port:8080}
+    title: API Document
+    version: 1.0.0

@@ -6,12 +6,15 @@ import com.tuonglh.coffee.samplecode.dto.request.UserRequestDTO;
 import com.tuonglh.coffee.samplecode.dto.response.ResponseData;
 import com.tuonglh.coffee.samplecode.dto.response.ResponseError;
 import com.tuonglh.coffee.samplecode.dto.response.ResponseSuccess;
+import com.tuonglh.coffee.samplecode.dto.response.UserDetailResponse;
+import com.tuonglh.coffee.samplecode.dto.validation.enums.UserStatus;
 import com.tuonglh.coffee.samplecode.exception.ResourceNotFoundException;
 import com.tuonglh.coffee.samplecode.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,7 @@ import java.util.List;
 @RequestMapping("/user") // mapping url
 @Validated
 @Slf4j
+@RequiredArgsConstructor
 @Tag(name = "User Controller")  // đặt tên cho controller
 public class UserController {
     /** @Operation(summary = "sumary", description = "description", responses = {
@@ -42,12 +46,7 @@ public class UserController {
                     )
             )
     }) */  // mô tả api
-
-
-
-
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
 //    @PostMapping(value="/")
 //    public ResponseData<Integer> createUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
@@ -64,42 +63,73 @@ public class UserController {
     @PostMapping(value = "/{userId}" )
     //@RequestMapping(method = RequestMethod.POST, path = "/" , headers = "apiKey=v1.0")
     public ResponseData<Integer> addUser(@Valid @RequestBody UserRequestDTO userDTO){
-         System.out.println("Request add user" + userDTO.getFirstName());
+        log.info("Request add user, {}, {}", userDTO.getFirstName(), userDTO.getLastName());
+         log.info("Request add userFirstName:  {}" , userDTO.getFirstName());
          //return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Can not create user ");
          try{
-             userService.addUser(userDTO);
+             long UserId = userService.saveUser(userDTO);
              return new ResponseData<>(HttpStatus.CREATED.value(),Translator.toLocale("user.add.success"), 1 );
          }catch(ResourceNotFoundException e){
+             log.error("errorMessage = {}", e.getMessage(), e.getCause());
              return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Save failed ");
          }
     }
 
     @Operation(summary = "Update all user", description = "API Update user")
     @PutMapping("/{userId}")// sửa toàn bộ
-    public ResponseData<Integer> updateUser(@PathVariable int userId, @Valid @RequestBody UserRequestDTO userDTO){
-        System.out.println("Request update usedId= " + userId);
-        return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("user.update.success"), 1);
+    public ResponseData<Integer> updateUser(@PathVariable long userId, @Valid @RequestBody UserRequestDTO userDTO){
+        log.info("Request update usedId= {}" , userId);
+        try{
+            userService.updateUser(userId, userDTO);
+            return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("user.update.success"), 1);
+
+        }catch(Exception e){
+            log.info("errorMessage = {}", e.getMessage(), e.getCause());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Update failed ");
+        }
+
     }
 
     @Operation(summary = "Update status", description = "API update status")
     @PatchMapping("/{userId}")
-    public ResponseData<Integer> changeUser(@PathVariable int userId, @RequestParam boolean status){  // request param bắt buọc truyền status
+    public ResponseData<Integer> changeUser(@PathVariable long userId, @RequestParam UserStatus status){  // request param bắt buọc truyền status
                             //Lấy giá trị từ path trong URL.
-        System.out.println("Request change status, userId= " + status);
-        return new ResponseData<>(HttpStatus.ACCEPTED.value(), "User successfully updated", 1);
+        log.info("Request change status, userId= {}" , status);
+        try{
+            userService.changeStatus(userId, status);
+            return new ResponseData<>(HttpStatus.ACCEPTED.value(), "User successfully updated", 1);
+        }catch(Exception e){
+            log.info("errorMessage = {}", e.getMessage(), e.getCause());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Change status failed ");
+        }
+
     }
 
     @Operation(summary = "Delete user", description = "API delete user")
     @DeleteMapping("/{userId}")
     public ResponseData<Integer> deleteUser(@PathVariable @Min(value = 1, message = "userId must be greater than 0") int userId) {
-        return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "User successfully deleted", 1);
+        log.info("Request delete user, userId= {}" , userId);
+
+        try{
+            userService.deleteUser(userId);
+            return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "User successfully deleted", 1);
+        }catch(Exception e){
+            log.info("errorMessage = {}", e.getMessage(), e.getCause());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Delete user failed ");
+        }
     }
 
     @Operation(summary = "Get user", description = "API get  user")
     @GetMapping("/{userId}")
-    public ResponseData<UserRequestDTO> getUser(@PathVariable int userId){
-        System.out.println("Request get user, userId= " + userId);
-        return new ResponseData<>(HttpStatus.OK.value(), "user", new  UserRequestDTO("Tuong", "Hhehe", "phone", "email"));
+    public ResponseData<UserDetailResponse> getUser(@PathVariable long userId){
+        log.info("Request get user, userId= {} " , userId);
+        try{
+            return new ResponseData<>(HttpStatus.OK.value(), "user", userService.getUser(userId));
+        }catch(ResourceNotFoundException e){
+            log.error("errorMessage = {}", e.getMessage(), e.getCause());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+
     }
 
     @Operation(summary = "Update user", description = "API Update user")
@@ -110,12 +140,14 @@ public class UserController {
 
     @Operation(summary = "Get list of user", description = "API get list user")
     @GetMapping("/list")
-    public ResponseData<List<UserRequestDTO>> getUserList(
+    public ResponseData<List<UserDetailResponse>> getUserList(
             @RequestParam (required = false) String email,
             @RequestParam(defaultValue = "0") int pageNo,
             @Min(10) @RequestParam (defaultValue = "20") int pageSize){
-        System.out.println("Request get user list");
-        return new ResponseData<>(HttpStatus.OK.value(), "List of user", List.of(new UserRequestDTO("Tuong", "Hhehe", "phone", "email")
-        , new UserRequestDTO("Tuondasdg", "zxc", "phovzxne", "emailzxc")));
+
+        log.info("Request get user list");
+        return new ResponseData<>(HttpStatus.OK.value(), "List of user", userService.getAllUsers(pageNo,pageSize));
+
+
     }
 }
