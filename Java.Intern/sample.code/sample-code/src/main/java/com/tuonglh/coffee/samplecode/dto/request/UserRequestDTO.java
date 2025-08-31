@@ -5,18 +5,25 @@ import com.tuonglh.coffee.samplecode.dto.validation.annotation.EnumPattern;
 import com.tuonglh.coffee.samplecode.dto.validation.annotation.EnumValue;
 import com.tuonglh.coffee.samplecode.dto.validation.annotation.GenderSubset;
 import com.tuonglh.coffee.samplecode.dto.validation.annotation.PhoneNumber;
-import com.tuonglh.coffee.samplecode.model.enums.Gender;
-import com.tuonglh.coffee.samplecode.model.enums.UserStatus;
-import com.tuonglh.coffee.samplecode.model.enums.UserType;
+import com.tuonglh.coffee.samplecode.dto.validation.enums.Gender;
+import com.tuonglh.coffee.samplecode.dto.validation.enums.UserStatus;
+import com.tuonglh.coffee.samplecode.dto.validation.enums.UserType;
+import com.tuonglh.coffee.samplecode.model.Address;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRequestDTO implements Serializable {
 
     @NotBlank(message = "firstName must be not blank") // Khong cho phep gia tri blank
@@ -52,7 +59,7 @@ public class UserRequestDTO implements Serializable {
     private String type;
 
     @NotEmpty(message = "addresses can not empty")
-    private Set<Address> addresses;
+    private Set<AddressDTO> addresses;
 
     @EnumPattern(name = "status", message = "Lmao", regexp = "ACTIVE|INACTIVE|NONE")
     private UserStatus status;
@@ -63,123 +70,4 @@ public class UserRequestDTO implements Serializable {
         this.email = email;
         this.phone = phone;
     }
-
-    public static class Address {
-        private String apartmentNumber;
-        private String floor;
-        private String building;
-        private String streetNumber;
-        private String street;
-        private String city;
-        private String country;
-        private Integer addressType;
-
-        public String getApartmentNumber() {
-            return apartmentNumber;
-        }
-
-        public void setApartmentNumber(String apartmentNumber) {
-            this.apartmentNumber = apartmentNumber;
-        }
-
-        public String getFloor() {
-            return floor;
-        }
-
-        public void setFloor(String floor) {
-            this.floor = floor;
-        }
-
-        public String getBuilding() {
-            return building;
-        }
-
-        public void setBuilding(String building) {
-            this.building = building;
-        }
-
-        public String getStreetNumber() {
-            return streetNumber;
-        }
-
-        public void setStreetNumber(String streetNumber) {
-            this.streetNumber = streetNumber;
-        }
-
-        public String getStreet() {
-            return street;
-        }
-
-        public void setStreet(String street) {
-            this.street = street;
-        }
-
-        public String getCity() {
-            return city;
-        }
-
-        public void setCity(String city) {
-            this.city = city;
-        }
-
-        public String getCountry() {
-            return country;
-        }
-
-        public void setCountry(String country) {
-            this.country = country;
-        }
-
-        public Integer getAddressType() {
-            return addressType;
-        }
-
-        public void setAddressType(Integer addressType) {
-            this.addressType = addressType;
-        }
-        }
-
-        public String getFirstName() {
-            return firstName;
-        }
-
-        public String getLastName() {
-            return lastName;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public String getPhone() {
-            return phone;
-        }
-
-        public LocalDate getDateOfBirth() {
-            return dateOfBirth;
-        }
-
-        public Gender getGender() {
-            return gender;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public Set<Address> getAddresses() {
-            return addresses;
-        }
-
-        public UserStatus getStatus() {
-            return status;
-        }
 }
