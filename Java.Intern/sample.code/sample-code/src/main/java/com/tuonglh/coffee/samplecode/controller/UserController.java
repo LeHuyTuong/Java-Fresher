@@ -12,6 +12,8 @@ import com.tuonglh.coffee.samplecode.exception.ResourceNotFoundException;
 import com.tuonglh.coffee.samplecode.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @RestController // cho class có nghĩa là các RESTful API của chúng ta được trả về kết quả dưới dạng JSON hoặc XML
@@ -62,7 +66,7 @@ public class UserController {
     @Operation(summary = "Add user", description = "API create new user")
     @PostMapping(value = "/{userId}" )
     //@RequestMapping(method = RequestMethod.POST, path = "/" , headers = "apiKey=v1.0")
-    public ResponseData<Integer> addUser(@Valid @RequestBody UserRequestDTO userDTO){
+    public ResponseData<?> addUser(@Valid @RequestBody UserRequestDTO userDTO) throws MessagingException, UnsupportedEncodingException {
         log.info("Request add user, {}, {}", userDTO.getFirstName(), userDTO.getLastName());
          log.info("Request add userFirstName:  {}" , userDTO.getFirstName());
          //return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Can not create user ");
@@ -77,7 +81,8 @@ public class UserController {
 
     @Operation(summary = "Update all user", description = "API Update user")
     @PutMapping("/{userId}")// sửa toàn bộ
-    public ResponseData<Integer> updateUser(@PathVariable long userId, @Valid @RequestBody UserRequestDTO userDTO){
+    public ResponseData<?> updateUser(@PathVariable long userId,
+                                            @Valid @RequestBody UserRequestDTO userDTO){
         log.info("Request update usedId= {}" , userId);
         try{
             userService.updateUser(userId, userDTO);
@@ -92,7 +97,8 @@ public class UserController {
 
     @Operation(summary = "Update status", description = "API update status")
     @PatchMapping("/{userId}")
-    public ResponseData<Integer> changeUser(@PathVariable long userId, @RequestParam UserStatus status){  // request param bắt buọc truyền status
+    public ResponseData<?> changeUser(@PathVariable long userId,
+                                            @RequestParam UserStatus status){  // request param bắt buọc truyền status
                             //Lấy giá trị từ path trong URL.
         log.info("Request change status, userId= {}" , status);
         try{
@@ -105,9 +111,26 @@ public class UserController {
 
     }
 
+    @GetMapping("/confirm/{userId}")
+    public ResponseData<?> confirmUser(@PathVariable long userId,
+                                       @RequestParam String secretCode,
+                                       HttpServletResponse response) throws IOException {  // request param bắt buọc truyền status
+        //Lấy giá trị từ path trong URL.
+        log.info("Confirm user userId = {}, secret= {}" , userId,secretCode);
+        try{
+            userService.confirmUser(userId, secretCode);
+            return new ResponseData<>(HttpStatus.ACCEPTED.value(), "User confirm");
+        }catch(Exception e){
+            log.info("errorMessage = {}", e.getMessage(), e.getCause());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Confirm fails");
+        }finally{
+            response.sendRedirect("https://tayjava.vn");
+        }
+    }
+
     @Operation(summary = "Delete user", description = "API delete user")
     @DeleteMapping("/{userId}")
-    public ResponseData<Integer> deleteUser(@PathVariable @Min(value = 1, message = "userId must be greater than 0") int userId) {
+    public ResponseData<?> deleteUser(@PathVariable @Min(value = 1, message = "userId must be greater than 0") int userId) {
         log.info("Request delete user, userId= {}" , userId);
 
         try{
@@ -121,7 +144,7 @@ public class UserController {
 
     @Operation(summary = "Get user", description = "API get  user")
     @GetMapping("/{userId}")
-    public ResponseData<UserDetailResponse> getUser(@PathVariable long userId){
+    public ResponseData<?> getUser(@PathVariable long userId){
         log.info("Request get user, userId= {} " , userId);
         try{
             return new ResponseData<>(HttpStatus.OK.value(), "user", userService.getUser(userId));
@@ -134,20 +157,46 @@ public class UserController {
 
     @Operation(summary = "Update user", description = "API Update user")
     @PatchMapping("/{userId}/status")
-    public ResponseData<Integer> updateStatus(@Min(10) @PathVariable int userId, @RequestParam boolean status) {
+    public ResponseData<Integer> updateStatus(@Min(10) @PathVariable int userId,
+                                              @RequestParam boolean status) {
         return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "User successfully updated", 1);
     }
 
-    @Operation(summary = "Get list of user", description = "API get list user")
+    @Operation(summary = "Get list of user per pageNo", description = "send a request via this API to get user list by pageNo and pageSize")
     @GetMapping("/list")
-    public ResponseData<List<UserDetailResponse>> getUserList(
+    public ResponseData<?> getUserList(
             @RequestParam (required = false) String email,
             @RequestParam(defaultValue = "0") int pageNo,
-            @Min(10) @RequestParam (defaultValue = "20") int pageSize){
+            @Min(10) @RequestParam (defaultValue = "20") int pageSize,
+            @RequestParam(required = false) String sortBy){
 
         log.info("Request get user list");
-        return new ResponseData<>(HttpStatus.OK.value(), "List of user", userService.getAllUsers(pageNo,pageSize));
-
-
+        return new ResponseData<>(HttpStatus.OK.value(), "List of user", userService.getAllUsersWithSortBy(pageNo,pageSize, sortBy));
     }
+
+    @Operation(summary = "Get list of all user ort by multiple colum ", description = "send a request via this API to get user list by sort")
+    @GetMapping("/list-with-sort-by-multiple-columns")
+    public ResponseData<?> getAllUsersWithSortByMultipleColumns(
+            @RequestParam (required = false) String email,
+            @RequestParam(defaultValue = "0") int pageNo,
+            @Min(10) @RequestParam (defaultValue = "20") int pageSize,
+            @RequestParam(value = "sort", required = false) String... sort){
+
+        log.info("Request get all users with sort by multiple column");
+        return new ResponseData<>(HttpStatus.OK.value(), "List of user", userService.getAllUsersWithSortByMultipleColumns(pageNo,pageSize, sort));
+    }
+
+    @Operation(summary = "Get list of all user ort by multiple colum and search ", description = "send a request via this API to get user list by sort")
+    @GetMapping("/list-with-sort-by-multiple-columns-search")
+    public ResponseData<?> getAllUsersWithSortByMultipleColumnsAndSearch(
+            @RequestParam (required = false) String email,
+            @RequestParam(defaultValue = "0") int pageNo,
+            @Min(10) @RequestParam (defaultValue = "20") int pageSize,
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "sort", required = false) String sortsBy){
+
+        log.info("Request get all users with sort by multiple column and search");
+        return new ResponseData<>(HttpStatus.OK.value(), "List of user", userService.getAllUsersWithSortByMultipleColumnsAndSearch(pageNo,pageSize,search,sortsBy));
+    }
+
 }

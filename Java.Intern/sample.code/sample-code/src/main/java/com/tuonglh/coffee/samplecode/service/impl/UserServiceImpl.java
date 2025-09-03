@@ -2,25 +2,35 @@ package com.tuonglh.coffee.samplecode.service.impl;
 
 import com.tuonglh.coffee.samplecode.dto.request.AddressDTO;
 import com.tuonglh.coffee.samplecode.dto.request.UserRequestDTO;
+import com.tuonglh.coffee.samplecode.dto.response.PageResponse;
 import com.tuonglh.coffee.samplecode.dto.response.UserDetailResponse;
 import com.tuonglh.coffee.samplecode.dto.validation.enums.UserStatus;
 import com.tuonglh.coffee.samplecode.dto.validation.enums.UserType;
 import com.tuonglh.coffee.samplecode.exception.ResourceNotFoundException;
 import com.tuonglh.coffee.samplecode.model.Address;
 import com.tuonglh.coffee.samplecode.model.User;
+import com.tuonglh.coffee.samplecode.repository.SearchRepository;
 import com.tuonglh.coffee.samplecode.repository.UserRepository;
+import com.tuonglh.coffee.samplecode.service.MailService;
 import com.tuonglh.coffee.samplecode.service.UserService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service // annotation này cho biết class này thuộc về Service
 @Slf4j // ghi log
@@ -29,9 +39,11 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository; // inject 1 bean
+    private final SearchRepository searchRepository;
+    private final MailService mailService;
 
     @Override
-    public long saveUser(UserRequestDTO requestDTO) {
+    public long saveUser(UserRequestDTO requestDTO) throws MessagingException, UnsupportedEncodingException {
         User user = User.builder()
                 .firstName(requestDTO.getFirstName())
                 .lastName(requestDTO.getLastName())
@@ -58,6 +70,14 @@ public class UserServiceImpl implements UserService {
                             .build());
         });
         userRepository.save(user);
+
+        // muốn thịt con gà thi phải có con gà
+        if(user.getId() != null){
+            // send email confirm
+            mailService.sendConfirmLink(user.getEmail(),user.getId(), "secretCode");
+
+        }
+
         log.info("User saved successfully");
         return user.getId();
     }
@@ -115,24 +135,113 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDetailResponse> getAllUsers(int pageNo, int pageSize) {
+    public PageResponse<?> getAllUsersWithSortBy(int pageNo, int pageSize, String sortBy) {
         //B1 . taoj pageable
-        int p = 0;
         if(pageNo > 0){
-            p = pageNo - 1 ;
+            pageNo = pageNo - 1 ;
         }
-        Pageable pageable = PageRequest.of(p, pageSize);
+
+        List<Sort.Order> sorts = new ArrayList<>();
+        // nếu có giá trị sortBy mới xử lý
+        if(StringUtils.hasLength(sortBy)){
+
+            //firstName : asc|desc
+            Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)"); // có 3 group
+            Matcher matcher = pattern.matcher(sortBy);
+
+            if(matcher.find()){
+                //  xử lý đk sort
+                if(matcher.group(3).equalsIgnoreCase("acs")) {// truyền vào group 3 là asc hoặc desc
+                    sorts.add(new Sort.Order(Sort.Direction.ASC, matcher.group(1)));
+                }else{
+                    sorts.add(new Sort.Order(Sort.Direction.DESC, matcher.group(1)));
+                }
+            }
+
+        }
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sorts)); // truyền field, firstName , lastName trong Entity
         //B2 Tra ve Page
         Page<User> users = userRepository.findAll(pageable);// find theo pageable
         //B3 boc tach user de chuyen ve list
 
-        return users.stream().map(user -> UserDetailResponse.builder()
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .phone(user.getPhone())
-                .build())
+        List<UserDetailResponse> responses = users.stream().map(user -> UserDetailResponse.builder()
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .email(user.getEmail())
+                        .phone(user.getPhone())
+                        .build())
                 .toList(); // toList là return về đây là 1 list của UserDetailResponse
+
+        return PageResponse.builder()
+                .pageNo(pageNo)
+                .pageSize(pageSize)
+                .totalPage(users.getTotalPages())
+                .items(responses)
+                .build();// toList là return về đây là 1 list của UserDetailResponse
+    }
+
+    @Override
+    public PageResponse<?> getAllUsersWithSortByMultipleColumns(int pageNo, int pageSize, String... sorts) {
+        if(pageNo > 0){
+            pageNo = pageNo - 1 ;
+        }
+        if (sorts == null) {
+            sorts = new String[0]; // để for-each & Sort.by(...) không bị NPE
+        }
+        List<Sort.Order> orders = new ArrayList<>();
+        for(String sortBy : sorts){
+            Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)"); // có 3 group
+            Matcher matcher = pattern.matcher(sortBy);
+            if(matcher.find()){
+                //  xử lý đk sort
+                if(matcher.group(3).equalsIgnoreCase("asc")) {// truyền vào group 3 là asc hoặc desc
+                    orders.add(new Sort.Order(Sort.Direction.ASC, matcher.group(1)));
+                }else{
+                    orders.add(new Sort.Order(Sort.Direction.DESC, matcher.group(1)));
+                }
+            }
+        }
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sorts)); // truyền field, firstName , lastName trong Entity
+        //B2 Tra ve Page
+        Page<User> users = userRepository.findAll(pageable);// find theo pageable
+        //B3 boc tach user de chuyen ve list
+
+        List<UserDetailResponse> responses = users.stream().map(user -> UserDetailResponse.builder()
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .email(user.getEmail())
+                        .phone(user.getPhone())
+                        .build())
+                .toList(); // toList là return về đây là 1 list của UserDetailResponse
+
+        return PageResponse.builder()
+                .pageNo(pageNo)
+                .pageSize(pageSize)
+                .totalPage(users.getTotalPages())
+                .items(responses)
+                .build();
+
+//        return users.stream().map(user -> UserDetailResponse.builder()
+//                        .firstName(user.getFirstName())
+//                        .lastName(user.getLastName())
+//                        .email(user.getEmail())
+//                        .phone(user.getPhone())
+//                        .build())
+//                .toList(); // toList là return về đây là 1 list của UserDetailResponse
+
+    }
+
+    @Override
+    public PageResponse<?> getAllUsersWithSortByMultipleColumnsAndSearch(int pageNo, int pageSize, String search, String sortsBy) {
+        return searchRepository.getALlUserWithSortByColumnAndSearch(pageNo, pageSize, search, sortsBy) ;
+    }
+
+    @Override
+    public void confirmUser(long userId, String secretCode) {
+        log.info("Confirm userId = {}, secretCode = {}" , userId, secretCode);
+
     }
 
     private Set<Address> convertToAddress(Set<AddressDTO> addresses) {
