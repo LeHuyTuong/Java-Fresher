@@ -1,19 +1,29 @@
 services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-    image: api-image-sample:latest
-    environment:
-      SPRING_PROFILES_ACTIVE: dev
+#  api:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    env_file:
+#      - .env
+#    image: api-image-sample:latest
+#    environment:
+#      SPRING_PROFILES_ACTIVE: dev
+#    ports:
+#      - "8080:80"        # host:container
+#    networks:
+#      - backend
+#    restart: unless-stopped
+  redis:
+    image: redis:6.2-alpine
+    container_name: redis
+    hostname: redis
     ports:
-      - "8080:80"        # host:container
+      - '6379:6379'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
     networks:
       - backend
-    restart: unless-stopped
-
 networks:
   backend:
     driver: bridge
