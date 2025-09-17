@@ -21,6 +21,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -41,6 +43,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository; // inject 1 bean
     private final SearchRepository searchRepository;
     private final MailService mailService;
+
+    @Override
+    public UserDetailsService userDetailsService() {
+        return username ->
+                userRepository.findByUsername(username)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 
     @Override
     public long saveUser(UserRequestDTO requestDTO) throws MessagingException, UnsupportedEncodingException {

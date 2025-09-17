@@ -18,10 +18,10 @@ import com.tuonglh.coffee.coffee.entity.Product;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Controller // @RestController ,cũng nghe,  nhưng trả về Json
 public class ProductController {
 

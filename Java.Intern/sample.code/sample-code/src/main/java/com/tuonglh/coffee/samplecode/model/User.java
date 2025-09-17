@@ -8,9 +8,14 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -20,9 +25,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity(name = "User")
 @Table(name="tbl_user")
-public class User extends AbstractEntity{
-
-
+public class User extends AbstractEntity implements UserDetails, Serializable {
 
     @Column(name = "first_name")
     private String firstName;
@@ -71,4 +74,28 @@ public class User extends AbstractEntity{
         }
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() { // phân quyền
+        return List.of();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() { // tài khoản không hết hạn
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() { // tài khoản không bị khóa
+        return UserStatus.ACTIVE.equals(status);
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {  // thông tin đăng nhập không hết hạn
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {  // tài khoản được kích hoạt
+        return true;
+    }
 }

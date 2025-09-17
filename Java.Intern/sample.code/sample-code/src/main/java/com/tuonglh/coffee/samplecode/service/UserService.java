@@ -5,11 +5,14 @@ import com.tuonglh.coffee.samplecode.dto.response.PageResponse;
 import com.tuonglh.coffee.samplecode.dto.response.UserDetailResponse;
 import com.tuonglh.coffee.samplecode.dto.validation.enums.UserStatus;
 import jakarta.mail.MessagingException;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public interface UserService {
+
+    UserDetailsService userDetailsService(); // Cung cấp UserDetailsService để cấu hình trong SecurityConfig
 
     long saveUser(UserRequestDTO requestDTO) throws MessagingException, UnsupportedEncodingException;
 
