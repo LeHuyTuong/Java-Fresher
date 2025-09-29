@@ -111,6 +111,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         log.info("User updated successfully");
         System.out.println("User updated successfully");
+
     }
 
     @Override

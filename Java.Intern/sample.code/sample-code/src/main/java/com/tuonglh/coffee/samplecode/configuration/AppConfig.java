@@ -18,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class AppConfig  // implements WebMvcConfigurer // sử dụng được cho 1 mình WebMvcConfigurer
 {
@@ -56,17 +58,16 @@ public class AppConfig  // implements WebMvcConfigurer // sử dụng được c
     @Bean
     public WebMvcConfigurer corsConfigurer() // sử dụng được cho 2 mình WebMvcConfigurer và OncePerRequestFilter
     {
-        return new WebMvcConfigurer() { // cấu hình CORS
+        return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings( @NonNull CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("POST", "GET", "PUT", "DELETE")
-                        .allowedHeaders("*")
-                        .exposedHeaders("Authorization")
-                        .allowCredentials(true)
+            public void addCorsMappings(@NonNull CorsRegistry registry) {
+                registry.addMapping("**")
+                        .allowedOrigins("http://localhost:8500")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE") // Allowed HTTP methods
+                        .allowedHeaders("*") // Allowed request headers
+                        .allowCredentials(false)
                         .maxAge(3600);
-            };
+            }
         };
     }
 
@@ -95,7 +96,7 @@ public class AppConfig  // implements WebMvcConfigurer // sử dụng được c
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){ // cấu hình để bỏ qua xác thực // thiết lập các url không cần bảo mật
-        return webSecurity ->
+        return (webSecurity) ->
                 webSecurity.ignoring() // bỏ qua xác thực
                         .requestMatchers( "/actuator/**", "/v3/**", "/webjars/**"  ,"/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"); // cho phép truy cập swagger mà không cần xác thực
     }
