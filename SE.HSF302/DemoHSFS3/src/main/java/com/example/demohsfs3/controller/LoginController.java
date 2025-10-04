@@ -30,7 +30,10 @@ public class LoginController {
                 return "redirect:/login";
             }
             session.setAttribute("user",user);
-            return "redirect:/home";
+            if(user.getRole().getRoleName().equals("admin")) return "redirect:/user/list";
+            else{
+                return "redirect:/home";
+            }
     }
 
     @GetMapping("/logout")

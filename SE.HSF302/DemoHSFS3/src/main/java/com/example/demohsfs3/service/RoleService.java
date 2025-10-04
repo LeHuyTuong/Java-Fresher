@@ -13,4 +13,5 @@ public interface RoleService {
     public void deleteRole(Role role);
     public boolean updateRole(Role role);
     public List<Role> findAll();
+    public Role findRoleById(int id);
 }

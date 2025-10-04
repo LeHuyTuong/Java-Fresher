@@ -11,12 +11,12 @@ public class HomeController {
     @GetMapping("/home")
     public String home(HttpSession session) {
         User user = (User) session.getAttribute("user");
-        if(session.getAttribute("user") == null) {
+        if(user == null) {
             return "redirect:/login";
         }else if(user.getRole().getRoleName().equals("admin")) {
-            return "home";
+            return "redirect:/user/list";
         }else{
-            return "redirect:/403";
+            return "home";
         }
     }
 
