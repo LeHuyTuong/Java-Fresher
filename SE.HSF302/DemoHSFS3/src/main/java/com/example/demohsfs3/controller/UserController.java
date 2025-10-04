@@ -48,16 +48,50 @@ public class UserController {
         return "redirect:/user/list";
     }
 
-    @PatchMapping("/user/update")
-    public String updateUser(@RequestParam int id,User user){
-        userService.updateUser(id,user);
-        return "redirect:/user/list";
+    @GetMapping("/user/update/{id}")
+    public ModelAndView updateUserForm(HttpSession session, @PathVariable int id){
+        User user = (User)session.getAttribute("user");
+        List<Role> roles = roleService.findAll();
+        User userToEdit =  userService.getUserById(id);
+        ModelAndView mav = new ModelAndView();
+        if(user.getRole().getRoleName().equals("admin")){
+            mav.addObject("user",userToEdit);
+            mav.addObject("roles",roles);
+            mav.setViewName("user/update");
+        }else{
+            return new ModelAndView("redirect:/home");
+        }
+        return mav;
     }
 
-    @DeleteMapping("/user/delete/{id}")
-    public String deleteUser(@PathVariable("/id") int id){
-        userService.deleteUser(id);
-        return "redirect:/user/list";
+    @PostMapping("/user/update")
+    public String updateUser(HttpSession session, User user, @RequestParam("roleId") int roleId){
+        User userSession = (User) session.getAttribute("user");
+        if(userSession == null) {
+            return "redirect:/login";
+        }
+        else if(userSession.getRole().getRoleName().equals("admin")){
+            Role role = roleService.findRoleById(roleId);
+            user.setRole(role);
+            userService.updateUser(user.getUserId(),user);
+            return "redirect:/user/list";
+        }else{
+            return "403";
+        }
+    }
+
+    @GetMapping("/user/delete/{id}")
+    public String deleteUser(HttpSession session,@PathVariable int id){
+        User userSession  = (User) session.getAttribute("user");
+        if(userSession == null) {
+            return "redirect:/login";
+        }else if(userSession.getRole().getRoleName().equals("admin")){
+            userService.deleteUser(id);
+            return "redirect:/user/list";
+        }
+        else{
+            return "403";
+        }
     }
 
 }

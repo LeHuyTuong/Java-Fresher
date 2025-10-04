@@ -1,0 +1,12 @@
+.btnHsf{
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    font-size: 18px;
+}
+
+input{
+    font-size: 18px;
+    background-color: Lightyellow;
+    color:red;
+}

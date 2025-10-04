@@ -2,12 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Update & Delete</title>
+    <title>Update User</title>
 </head>
 <body>
-<h1>Update </h1>
-<form th:action="@{/user/update}" th:object="${user}" method="get">
-    <input type="hidden" th:field="*{userId}"/>
+<h1>Update User</h1>
+<form th:action="@{/user/update}" th:object="${user}" method="post">
+    <div>
+        <label for="userId">UserID:</label>
+        <input type="text" id="userId" th:field="*{userId}" readonly/>
+    </div>
+
     <div>
         <label for="username">Username:</label>
         <input type="text" id="username" th:field="*{username}" required/>
@@ -17,10 +21,13 @@
         <input type="password" id="password" th:field="*{password}" required/>
     </div>
     <div>
-        <select th:field="*{role}">
-            <option th:each="role : ${roles}" th:value="${role.roleId}" th:text="${role.roleName}"></option>
+        <select id="roleId" name="roleId">
+            <option th:each="role : ${roles}" th:value="${role.roleId}" th:text="${role.roleName}"
+                    th:selected="${role.roleId} == ${user.role.roleId}"></option>
+<!--            sẽ dược chọn nếu roleId của role hiện tại bằng với roleId của user đang được chỉnh sửa-->
         </select>
     </div>
     <button type="submit">Update</button>
+</form>
 </body>
 </html>
