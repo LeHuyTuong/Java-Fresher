@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${(product.productID == 0 ? 'Thêm Sản phẩm' : 'Cập nhật Sản phẩm')}"></title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container navbar-content">
+        <a th:href="@{/product/list}" class="navbar-brand">
+            T1 <strong>ADMIN</strong>
+        </a>
+        <nav>
+            <ul class="navbar-links">
+                <li>
+                    <span th:if="${session.user != null}" th:text="${session.user.phone}" class="user-phone"></span>
+                </li>
+                <li>
+                    <a th:href="@{/logout}" class="btn btn-logout-nav">ĐĂNG XUẤT</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main class="container page-content">
+
+    <div class="form-card">
+        <h1 th:text="${product.productID == 0 ? 'Thêm Sản phẩm Mới' : 'Cập nhật Sản phẩm'}"></h1>
+
+        <form th:action="${product.productID == 0 ? '/product/create' : '/product/update'}"
+              th:object="${product}" method="post">
+
+            <input type="hidden" th:field="*{productID}"/>
+
+            <div class="form-group">
+                <label for="productName">Tên Sản phẩm:</label>
+                <input type="text" id="productName" th:field="*{productName}"/>
+                <p th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}" class="error-validation"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Giá:</label>
+                <input type="number" id="price" th:field="*{price}"/>
+                <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="error-validation"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="stock">Tồn kho:</label>
+                <input type="number" id="stock" th:field="*{stock}"/>
+                <p th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}" class="error-validation"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Danh mục:</label>
+                <select id="category" th:field="*{cateID}">
+                    <option value="">-- Chọn danh mục --</option>
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat.cateID}"
+                            th:text="${cat.cateName}"></option>
+                </select>
+                <!-- THÊM: Hiển thị lỗi validation cho trường danh mục -->
+                <p th:if="${#fields.hasErrors('cateID')}" th:errors="*{cateID}" class="error-validation"></p>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">LƯU LẠI</button>
+                <a th:href="@{/product/list}" class="btn btn-secondary">HỦY BỎ</a>
+            </div>
+        </form>
+    </div>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2025 Sony Product System // T1 FAKER THEME</p>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">T1 Admin</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container navbar-content">
+        <a th:href="@{/product/list}" class="navbar-brand">
+            T1 <strong>ADMIN</strong>
+        </a>
+        <nav>
+            <ul class="navbar-links">
+                <li>
+                    <span th:if="${session.user != null}" th:text="${session.user.phone}" class="user-phone"></span>
+                </li>
+                <li>
+                    <a th:href="@{/logout}" class="btn btn-logout-nav">ĐĂNG XUẤT</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main class="container page-content">
+    <div th:replace="${content}"></div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2025 Sony Product System // T1 FAKER THEME</p>
+    </div>
+</footer>
+
+</body>
+</html>

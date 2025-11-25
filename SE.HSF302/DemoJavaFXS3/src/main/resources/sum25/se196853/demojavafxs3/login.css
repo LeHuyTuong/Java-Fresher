@@ -1,0 +1,81 @@
+/* App background: T1-ish rose gradient */
+.app {
+    -fx-font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    -fx-background-color: linear-gradient(to bottom right, #ff6b8a, #ffd6e0 70%);
+}
+
+/* Card */
+.card {
+    -fx-background-color: rgba(255,255,255,0.92);
+    -fx-background-radius: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 28, 0.25, 0, 10);
+    -fx-spacing: 14;
+}
+
+/* Typography */
+.title {
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #be123c; /* rose-700 */
+}
+.subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6b7280; /* gray-500 */
+}
+.label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #374151; /* gray-700 */
+}
+
+/* Form fields */
+.text-field, .password-field {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-padding: 10 12 10 12;
+    -fx-border-color: #fda4af; /* rose-300 */
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-prompt-text-fill: #9ca3af;
+}
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #fb7185; /* rose-400 */
+    -fx-effect: dropshadow(gaussian, rgba(251,113,133,0.25), 10, 0.3, 0, 2);
+}
+
+/* Buttons */
+.btn {
+    -fx-background-radius: 12;
+    -fx-padding: 10 14 10 14;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+}
+.btn-primary {
+    -fx-text-fill: white;
+    -fx-background-color: linear-gradient(to right, #e11d48, #fb7185);
+}
+.btn-primary:hover {
+    -fx-background-color: linear-gradient(to right, #be123c, #f43f5e);
+}
+.btn-ghost {
+    -fx-background-color: transparent;
+    -fx-text-fill: #be123c;
+    -fx-border-color: #fda4af;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+.btn-ghost:hover {
+    -fx-background-color: rgba(255,255,255,0.6);
+}
+
+/* Status text */
+.status {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6b7280;
+}
+
+/* Optional success/error states you có thể set runtime:
+   lblStatus.getStyleClass().setAll("status","status-success");
+   hoặc "status-error"
+*/
+.status-success { -fx-text-fill: #16a34a; } /* green-600 */
+.status-error   { -fx-text-fill: #dc2626; } /* red-600 */

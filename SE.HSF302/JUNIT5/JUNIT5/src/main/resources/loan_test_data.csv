@@ -1,0 +1,10 @@
+principal,annualInterestRate,years,expectedResult,resultWeb,description
+100000,6,10,1110.21,1110.21,Normal case
+0,0,5,0.00,0.00,Zero principal and interest case
+0.1,0.1,1/12,0.10, Boundary Value case
+
+
+
+-200,6,10,0.00,0.00,Negative principal case
+100000,-6,10,0.00,0.00,Negative interest case
+100000,6,-5,0.00,0.00,Negative years case
