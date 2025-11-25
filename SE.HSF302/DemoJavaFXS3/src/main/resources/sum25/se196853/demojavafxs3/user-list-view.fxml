@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      xmlns="http://javafx.com/javafx/17"
+      fx:controller="sum25.se196853.demojavafxs3.controller.UserListController"
+      alignment="CENTER" spacing="20.0">
+
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+    </padding>
+
+    <Label text="User List" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+    <TableView fx:id="userTable" prefHeight="300.0" prefWidth="500.0">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="75.0"/>
+            <TableColumn fx:id="usernameColumn" text="Username" prefWidth="200.0"/>
+            <TableColumn fx:id="passwordColumn" text="Password (Demo)" prefWidth="200.0"/>
+        </columns>
+    </TableView>
+
+</VBox>

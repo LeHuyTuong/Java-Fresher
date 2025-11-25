@@ -2,6 +2,9 @@ package com.example.demohsfs3.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +23,9 @@ public class User {
     @Column(name = "user_id")
     private int userId;
 
+    @NotBlank
+    @NotEmpty
+    @Size(min = 4, max = 20, message = "User must be between 4 and 20 characters ")
     @Column(name = "username" , length =  50 , unique = true, nullable = false)
     private String username;
 

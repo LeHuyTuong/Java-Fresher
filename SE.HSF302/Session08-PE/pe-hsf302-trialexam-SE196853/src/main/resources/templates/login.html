@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SE196853 - Login Page</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="login-wrapper">
+    <div class="login-card">
+        <h1>SONY ADMIN</h1>
+        <h2 class="subtitle">System Login</h2>
+
+        <div th:if="${param.error}" class="error-message">
+            Sai thông tin đăng nhập hoặc bạn không có quyền!
+        </div>
+
+        <form th:action="@{/login}" method="post" class="login-form">
+            <div class="form-group">
+                <label for="phone">Số điện thoại</label>
+                <input id="phone" name="phone" type="text" placeholder="Nhập số điện thoại" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Mật khẩu</label>
+                <input id="password" name="password" type="password" placeholder="Nhập mật khẩu" required>
+            </div>
+            <button type="submit" class="btn-login">ĐĂNG NHẬP</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

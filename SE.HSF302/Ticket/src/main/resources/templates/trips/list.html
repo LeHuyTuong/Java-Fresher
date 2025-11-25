@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách chuyến đi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<div class="container mt-4">
+    <h2>Danh sách chuyến đi</h2>
+
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="mb-3">
+        <a th:href="@{/trips/new}" class="btn btn-primary">Thêm chuyến đi mới</a>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Mã tàu</th>
+            <th>Mã tuyến đường</th>
+            <th>Ngày đi</th>
+            <th>Giờ khởi hành</th>
+            <th>Giờ đến</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="trip : ${trips}">
+            <td th:text="${trip.id}"></td>
+            <td th:text="${trip.trainCode}"></td>
+            <td th:text="${trip.routeCode}"></td>
+            <td th:text="${trip.tripDate}"></td>
+            <td th:text="${trip.departureTime}"></td>
+            <td th:text="${trip.arrivalTime}"></td>
+            <td>
+                        <span class="badge rounded-pill"
+                              th:classappend="${trip.status == T(com.trainbooking.model.Trip.TripStatus).active ? 'bg-success' : 'bg-danger'}"
+                              th:text="${trip.status}">
+                        </span>
+            </td>
+            <td>
+                <a th:href="@{/trips/edit/{id}(id=${trip.id})}" class="btn btn-sm btn-warning">Sửa</a>
+                <a th:href="@{/trips/delete/{id}(id=${trip.id})}" class="btn btn-sm btn-danger"
+                   onclick="return confirm('Bạn có chắc chắn muốn xóa chuyến đi này?')">Xóa</a>
+                <a th:href="@{/bookings/start/{id}(id=${trip.id})}" class="btn btn-sm btn-success">Đặt vé</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/}" class="btn btn-secondary">Quay lại trang chủ</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

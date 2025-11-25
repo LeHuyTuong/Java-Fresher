@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="sum25.se196853.demojavafxs3.controller.UserController"
+            prefHeight="400.0" prefWidth="600.0">
+    <VBox alignment="CENTER" spacing="30.0" styleClass="login.css">
+
+        <Label text = "FPT UNIVERSITY MANAGEMENT" styleClass="login.css"/>
+
+        <Label text= "Student Login Portal" styleClass="title-label"></Label>
+
+        <Label fx:id="welcome-text" styleClass="subtitle-label"></Label>
+
+        <Button fx:id = "btnLogin" onAction="#onHelloButtonClick" text = "Hello"></Button>
+    </VBox>
+</VBox>

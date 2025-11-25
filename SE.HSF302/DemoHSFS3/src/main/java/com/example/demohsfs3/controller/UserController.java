@@ -6,10 +6,14 @@ import com.example.demohsfs3.repository.UserRepository;
 import com.example.demohsfs3.service.RoleService;
 import com.example.demohsfs3.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -43,7 +47,17 @@ public class UserController {
     }
 
     @PostMapping("/user/create")
-    public String createUser(User user){
+    public String createUser(@Valid User user,
+                             BindingResult bindingResult,
+                             Model model,
+                             @RequestParam("roleId") int roleId){
+        if(bindingResult.hasErrors()){
+            List<Role> roles = roleService.findAll();
+            model.addAttribute("roles",roles);
+            return "user/create";
+        }
+        Role role = roleService.findRoleById(roleId);
+        user.setRole(role);
         userService.createUser(user);
         return "redirect:/user/list";
     }

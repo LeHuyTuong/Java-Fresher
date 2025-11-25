@@ -16,7 +16,6 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    @Transactional
     public boolean createUser(User user) {
         return userRepository.save(user) != null; // hoặc != 0 tùy kiểu
     }

@@ -1,0 +1,354 @@
+/* =================================
+   GLOBAL STYLES (Chủ đề T1 - Dark Mode)
+   ================================= */
+:root {
+    --t1-red: #e60026;      /* Màu đỏ T1 đặc trưng */
+    --t1-red-hover: #b3001e;
+    --dark-bg: #121212;      /* Nền chính (rất tối) */
+    --dark-card: #1e1e1e;     /* Nền thẻ (tối vừa) */
+    --dark-header: #181818;   /* Nền header/table */
+    --text-primary: #f5f5f5; /* Chữ trắng */
+    --text-secondary: #a0a0a0;/* Chữ xám */
+    --border-color: #3a3a3a;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 12px rgba(230, 0, 38, 0.15); /* Bóng mờ màu đỏ */
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--dark-bg);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* =================================
+   LOGIN PAGE (Trang Đăng nhập)
+   ================================= */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--dark-bg);
+}
+
+.login-card {
+    background: var(--dark-card);
+    padding: 2.5rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-card h1 {
+    margin-top: 0;
+    font-size: 1.75rem;
+    color: var(--t1-red); /* Màu đỏ T1 */
+    font-weight: 700;
+}
+
+.login-card .subtitle {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group select { /* Thêm select cho form */
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 1rem;
+    background-color: var(--dark-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--t1-red);
+    box-shadow: 0 0 0 2px rgba(230, 0, 38, 0.3);
+}
+
+.btn-login {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    background-color: var(--t1-red);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.2s;
+}
+
+.btn-login:hover {
+    background-color: var(--t1-red-hover);
+}
+
+.error-message {
+    background-color: rgba(230, 0, 38, 0.1);
+    color: #ff8a8a;
+    border: 1px solid var(--t1-red);
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+/* =================================
+   ADMIN LAYOUT (Navbar/Footer chung)
+   ================================= */
+.navbar {
+    background-color: var(--dark-header);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    padding: 1rem 0;
+    border-bottom: 2px solid var(--t1-red);
+}
+
+.navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-brand {
+    font-size: 1.25rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 300;
+}
+.navbar-brand strong {
+    color: var(--t1-red);
+    font-weight: 700;
+}
+
+.navbar-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-links li {
+    margin-left: 1.5rem;
+}
+
+.navbar-links .user-phone {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.btn-logout-nav {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--text-primary);
+    background-color: var(--t1-red);
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.btn-logout-nav:hover {
+    background-color: var(--t1-red-hover);
+}
+
+.page-content {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+}
+
+.footer {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* =================================
+   PRODUCT LIST PAGE (Trang Danh sách)
+   ================================= */
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.list-header h1 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.btn-add {
+    background-color: var(--t1-red);
+    color: var(--text-primary);
+    padding: 10px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.btn-add:hover {
+    background-color: var(--t1-red-hover);
+}
+
+.table-wrapper {
+    background-color: var(--dark-card);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.product-table th {
+    background-color: var(--dark-header);
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--t1-red);
+}
+
+.product-table td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+    color: var(--text-primary);
+}
+
+.product-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.product-table tbody tr:hover {
+    background-color: #2a2a2a;
+}
+
+.actions a {
+    text-decoration: none;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 4px;
+    margin-right: 8px;
+    transition: all 0.2s;
+}
+
+.btn-update {
+    background: transparent;
+    border: 1px solid var(--text-secondary);
+    color: var(--text-secondary);
+}
+.btn-update:hover {
+    background: var(--text-secondary);
+    color: var(--dark-card);
+}
+
+.btn-delete {
+    background-color: var(--t1-red);
+    color: var(--text-primary);
+}
+.btn-delete:hover {
+    background-color: var(--t1-red-hover);
+}
+
+/* =================================
+   PRODUCT FORM PAGE (Trang Form)
+   ================================= */
+.form-card {
+    background-color: var(--dark-card);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 2.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+    border: 1px solid var(--border-color);
+}
+
+.form-card h1 {
+    margin-top: 0;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.error-validation {
+    color: #ff8a8a;
+    font-size: 0.85rem;
+    margin-top: 6px;
+}
+
+.form-actions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background-color: var(--t1-red);
+    color: var(--text-primary);
+}
+.btn-primary:hover {
+    background-color: var(--t1-red-hover);
+}
+
+.btn-secondary {
+    background-color: var(--border-color);
+    color: var(--text-primary);
+}
+.btn-secondary:hover {
+    background-color: #4a4a4a;
+}

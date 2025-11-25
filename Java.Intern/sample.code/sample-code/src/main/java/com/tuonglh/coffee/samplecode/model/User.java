@@ -23,9 +23,9 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "User")
+@Entity
 @Table(name="tbl_user")
-public class User extends AbstractEntity implements UserDetails, Serializable {
+public class User extends AbstractEntity<Long> implements UserDetails, Serializable {
 
     @Column(name = "first_name")
     private String firstName;
@@ -98,4 +98,10 @@ public class User extends AbstractEntity implements UserDetails, Serializable {
     public boolean isEnabled() {  // tài khoản được kích hoạt
         return true;
     }
+
+    @OneToMany(mappedBy = "user")
+    private Set<GroupHashUser> users = new HashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<UserHasRole> roles = new HashSet<>();
 }

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Đặt Vé Tàu</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<div class="container mt-4">
+    <header>
+        <h1 class="text-center">Hệ Thống Đặt Vé Tàu</h1>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/}">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/trips}">Lịch trình</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/users}">Quản lý người dùng</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/stations}">Ga tàu</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/routes}">Tuyến đường</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/bookings}">Đặt vé</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/tickets}">Vé</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="my-4">
+        <div class="jumbotron p-4 bg-light rounded">
+            <h2>Tìm kiếm chuyến đi</h2>
+            <form th:action="@{/trips/search}" method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="startStation" class="form-label">Ga đi</label>
+                    <select id="startStation" class="form-select" required>
+                        <option value="">Chọn ga đi</option>
+                        <option th:each="station : ${stations}" th:value="${station.code}" th:text="${station.name}"></option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="endStation" class="form-label">Ga đến</label>
+                    <select id="endStation" class="form-select" required>
+                        <option value="">Chọn ga đến</option>
+                        <option th:each="station : ${stations}" th:value="${station.code}" th:text="${station.name}"></option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="date" class="form-label">Ngày đi</label>
+                    <input type="date" id="date" name="date" class="form-control" required>
+                </div>
+                <div class="col-md-12 text-end">
+                    <button type="submit" class="btn btn-primary">Tìm chuyến đi</button>
+                </div>
+            </form>
+        </div>
+
+        <section class="mt-4">
+            <h3>Tuyến đường phổ biến</h3>
+            <div class="row">
+                <div class="col-md-4 mb-3" th:each="route : ${routes}">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${route.startStation.name + ' - ' + route.endStation.name}"></h5>
+                            <p class="card-text">Khoảng cách: <span th:text="${route.totalDistanceKm} + ' km'"></span></p>
+                            <p class="card-text">Thời gian ước tính: <span th:text="${route.estimatedDurationMinutes} + ' phút'"></span></p>
+                            <a th:href="@{'/routes/' + ${route.id}}" class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="mt-5 p-3 bg-light text-center">
+        <p>&copy; 2023 Hệ Thống Đặt Vé Tàu. All rights reserved.</p>
+    </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${(session.user != null ? session.user.phone : 'SE196853') + ' - Sony Management'}"></title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="container navbar-content">
+        <a th:href="@{/product/list}" class="navbar-brand">
+            T1 <strong>ADMIN</strong>
+        </a>
+        <nav>
+            <ul class="navbar-links">
+                <li>
+                    <span th:if="${session.user != null}" th:text="${session.user.phone}" class="user-phone"></span>
+                </li>
+                <li>
+                    <a th:href="@{/logout}" class="btn btn-logout-nav">ĐĂNG XUẤT</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main class="container page-content">
+
+    <div class="list-header">
+        <h1>Quản lý Sản phẩm</h1>
+        <div class="toolbar" th:if="${account.roleId == 1}">
+            <a th:href="@{/product/create}" class="btn-add">＋ Thêm Sản phẩm</a>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="product-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên Sản phẩm</th>
+                <th>Giá (VNĐ)</th>
+                <th>Tồn kho</th>
+                <th>Ngày tạo</th>
+                <th>Danh mục</th>
+                <th th:if="${account.roleId == 1}">Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.productID}"></td>
+                <td th:text="${product.productName}"></td>
+                <td th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}"></td>
+                <td th:text="${product.stock}"></td>
+                <td th:text="${product.createAt}"></td>
+                <td th:text="${product.cateID.cateName}"></td>
+
+                <td th:if="${account.roleId == 1}" class="actions">
+                    <a th:href="@{/product/update/{id}(id=${product.productID})}" class="btn-update">Sửa</a>
+                    <a th:href="@{/product/delete/{id}(id=${product.productID})}" class="btn-delete"
+                       onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">Xóa</a>
+                </td>
+            </tr>
+            <tr th:if="${products == null or products.isEmpty()}">
+                <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                    Không tìm thấy sản phẩm nào.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2025 Sony Product System // T1 FAKER THEME</p>
+    </div>
+</footer>
+
+</body>
+</html>
