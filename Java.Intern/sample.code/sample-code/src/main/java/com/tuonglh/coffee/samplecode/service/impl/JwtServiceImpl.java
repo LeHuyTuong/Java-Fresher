@@ -3,14 +3,14 @@ package com.tuonglh.coffee.samplecode.service.impl;
 import com.tuonglh.coffee.samplecode.service.JWTService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,24 +19,20 @@ import java.util.function.Function;
 @Service
 public class JwtServiceImpl implements JWTService {
 
-    // Đảm bảo key này giống hệt trong application.properties
-    @Value("${jwt.secret}")
+    @Value("${jwt.secretKey}")
     private String secretKey;
 
-    public Claims parseClaims(String token) {
-        // Cách lấy key cho HS256 từ chuỗi text
-        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-
-        return Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token) // Code mới 0.12.x
-                .getPayload();
-    }
+    @Value("${jwt.expiryTime}")
+    private long expiryHour;
 
     @Override
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    @Override
+    public String generateRefreshToken(UserDetails userDetails) {
+        return generateRefreshToken(new HashMap<>(), userDetails);
     }
 
     @Override
@@ -56,15 +52,21 @@ public class JwtServiceImpl implements JWTService {
     }
 
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-
         return Jwts.builder()
-                .claims(extraClaims)
-                .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
-                .signWith(key, Jwts.SIG.HS256) // Code mới 0.12.x
-                .compact();
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
+    }
+
+    private String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        return Jwts.builder()
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24 * expiryHour))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 
     private boolean isTokenExpired(String token) {
@@ -76,12 +78,15 @@ public class JwtServiceImpl implements JWTService {
     }
 
     private Claims extractAllClaims(String token) {
-        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-
         return Jwts.parser()
-                .verifyWith(key)
+                .setSigningKey(getSigningKey())
                 .build()
-                .parseSignedClaims(token) // Code mới 0.12.x
-                .getPayload();
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    private Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

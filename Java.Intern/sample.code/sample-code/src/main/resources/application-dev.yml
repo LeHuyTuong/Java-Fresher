@@ -1,0 +1,44 @@
+spring.application.name=sample-code
+  
+  # --- DataSource (MySQL) ---
+spring.datasource.url=jdbc:mysql://localhost:3306/sampledbJava?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=Tuong2005@
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+  
+  # --- JPA (MySQL) ---
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+  
+  # --- Hikari---
+spring.datasource.hikari.maximum-pool-size=10
+spring.datasource.hikari.minimum-idle=10
+spring.datasource.hikari.connection-timeout=30000
+spring.datasource.hikari.idle-timeout=600000
+spring.datasource.hikari.max-lifetime=1800000
+spring.datasource.hikari.pool-name=HikariConnPool
+  
+  # --- Mail (Gmail SMTP) ---
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=${MAIL_USERNAME}
+spring.mail.password=${MAIL_PASSWORD}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.from=monsterminecraft2005@gmail.com
+spring.servlet.multipart.max-file-size=25MB
+spring.servlet.multipart.max-request-size=30MB
+  
+  # --- JWT Configuration ---
+  # Expiry time in milliseconds (e.g., 86400000 = 24 hours)
+jwt.expiryTime=86400000
+  # The secret key must be Base64 encoded.
+jwt.secretKey=VGEtQ2FuLVBoYWktQ28tTW90LVNlY3JldEtleS1EdS1EYWktRGUtQmFvLU1hdC1DaG8tVW5nLUR1bmctTmF5LTEyMzQ1Njc4OTA=
+  
+  # --- OpenAPI (Swagger) Configuration ---
+open.api.title=Sample API
+open.api.version=1.0.0
+open.api.description=API documentation for the sample application.
+open.api.serverUrl=http://localhost:8080
+open.api.serverName=Local Development Server

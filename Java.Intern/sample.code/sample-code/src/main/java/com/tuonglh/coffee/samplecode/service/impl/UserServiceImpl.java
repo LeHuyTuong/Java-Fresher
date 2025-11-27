@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -43,6 +44,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository; // inject 1 bean
     private final SearchRepository searchRepository;
     private final MailService mailService;
+    private final PasswordEncoder passwordEncoder; // <--- 1. Inject thêm cái này
 
     @Override
     public UserDetailsService userDetailsService() {
@@ -59,7 +61,7 @@ public class UserServiceImpl implements UserService {
                 .dateOfBirth(requestDTO.getDateOfBirth())
                 .email(requestDTO.getEmail())
                 .username(requestDTO.getUsername())
-                .password(requestDTO.getPassword())
+                .password(passwordEncoder.encode(requestDTO.getPassword())) // <--- 2. THÊM DÒNG MỚI NÀY (Mã hóa password)
                 .status(requestDTO.getStatus())
                 .gender(requestDTO.getGender())
                 .phone(requestDTO.getPhone())
@@ -82,8 +84,8 @@ public class UserServiceImpl implements UserService {
 
         // muốn thịt con gà thi phải có con gà
         if(user.getId() != null){
-            // send email confirm
-            mailService.sendConfirmLink(user.getEmail(),user.getId(), "secretCode");
+            // send email confirm//
+            // mailService.sendConfirmLink(user.getEmail(),user.getId(), "secretCode");
 
         }
 

@@ -45,7 +45,8 @@ public class AppConfig  // implements WebMvcConfigurer // sử dụng được c
 
     private final UserService userService;
     private final PreFilter preFilter;
-    private String[] WHITE_LIST = {"/auth/**"} ; // danh sách trắng cho phép truy cập những cái ko cần token
+    private String[] WHITE_LIST = {"/auth/**", "/user/**", "/error"};
+    // danh sách trắng cho phép truy cập những cái ko cần token
 
 //    @Override
 //    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -72,25 +73,27 @@ public class AppConfig  // implements WebMvcConfigurer // sử dụng được c
     }
 
     @Bean
-    public PasswordEncoder getPasswordEncoder() { // mã hóa mật khẩu
+    public static PasswordEncoder getPasswordEncoder() { // mã hóa mật khẩu
         return new BCryptPasswordEncoder();
     }
 
+    // 1. Thêm tham số AuthenticationProvider vào hàm configure để Spring tự inject
     @Bean
-    public SecurityFilterChain configure(@NotNull HttpSecurity http) throws Exception  // cấu hình bảo mật
-    {
+    public SecurityFilterChain configure(@NotNull HttpSecurity http, AuthenticationProvider authProvider) throws Exception {
         http.cors(cors -> cors.configure(http))
-            .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers(WHITE_LIST)   // cho phép whitelist truy cập , là nơi thiết lập whitelist và blacklist
-                                .permitAll()// không cần xác thực
-                                .anyRequest() // còn lại
-                                .authenticated())// phải xác thực
-                                .sessionManagement(manager ->
-                        manager
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))// không lưu session giống http stateless , mỗi lần response là mất
-                                .authenticationProvider(provider()).addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class); // thêm filter tự tạo vào trước filter của spring security // lọc trước khi vào spring security
+                                .requestMatchers(WHITE_LIST).permitAll()
+                                .anyRequest().authenticated())
+                .sessionManagement(manager ->
+                        manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 2. Sử dụng biến authProvider được truyền vào thay vì gọi hàm provider()
+                .authenticationProvider(authProvider)
+
+                .addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -108,10 +111,11 @@ public class AppConfig  // implements WebMvcConfigurer // sử dụng được c
     }
 
     @Bean
-    public AuthenticationProvider provider(){ // truy cập DAO thông qua Service Detail
+    public AuthenticationProvider provider(PasswordEncoder passwordEncoder){ // truy cập DAO thông qua Service Detail
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(); // cung cấp xác thực dựa trên database
         provider.setUserDetailsService(userService.userDetailsService()); // lấy thông tin user từ database
-        provider.setPasswordEncoder(getPasswordEncoder()); // mã hóa mật khẩu
+
+        provider.setPasswordEncoder(passwordEncoder); // mã hóa mật khẩu
 
         return provider;
     }

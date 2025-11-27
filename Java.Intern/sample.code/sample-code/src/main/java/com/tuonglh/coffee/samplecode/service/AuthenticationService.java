@@ -34,7 +34,7 @@ public class AuthenticationService {
                 .orElseThrow(() -> new UsernameNotFoundException("Username hoặc mật khẩu không đúng"));
 
         String accessToken = jwtService.generateToken(user);
-        String refreshToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
         return TokenResponse.builder()
                 .accessToken(accessToken)
