@@ -43,7 +43,7 @@ public class User extends AbstractEntity<Long> implements UserDetails, Serializa
     @Column(name = "email")
     private String email;
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     @Column(name = "password")

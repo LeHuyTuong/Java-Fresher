@@ -1,0 +1,8 @@
+accessToken được sử dụng với mục đích xác thực và ủy quyền người dùng trong các ứng dụng web và API.
+và kéo dài được vài phút cho đến 8 tiếng
+được sử dụng cho những yếu tố bảo mật API
+
+
+Còn refreshToken được sử dụng với mục đích lâu dài hơn 2 tuần 1 tháng hoặc vài ngày
+cập nhật lại access token mới để trả về cho người dùng 1 API mới
+nếu sử dụng @RequestParam thì token sẽ hiện thị trên url ko bảo mật code vẫn chạy nhưng mà người dùng biết hết

@@ -3,12 +3,14 @@ package com.tuonglh.coffee.samplecode.configuration;
 
 import com.tuonglh.coffee.samplecode.service.JWTService;
 import com.tuonglh.coffee.samplecode.service.UserService;
+import com.tuonglh.coffee.samplecode.util.TokenType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,26 +30,31 @@ public class PreFilter  extends OncePerRequestFilter {
     private final JWTService jwtService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
         log.info(" ----------------PreFilter--------------");
 
         final String authorization = request.getHeader("Authorization");
         log.info("Authorization : {} ", authorization );
 
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
+        if (StringUtils.isEmpty(authorization) || !StringUtils.startsWith(authorization,"Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         final String token = authorization.substring("Bearer ".length());
         log.info("Token : {} ", token );
-
+        if ("null".equals(token)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         try{
-        final String userName = jwtService.extractUserName(token);
+        final String userName = jwtService.extractUserName(token, TokenType.ACCESS_TOKEN);
 
         if(SecurityContextHolder.getContext().getAuthentication() == null && userName == null){
             UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userName); // check DB xem user co ton tai trong DB khong
-            if(jwtService.isTokenValid(token,userDetails)) { // check xem co hop le ko
+            if(jwtService.isTokenValid(token,userDetails, TokenType.ACCESS_TOKEN)) { // check xem co hop le ko
                 SecurityContext context = SecurityContextHolder.createEmptyContext(); // tao cai moi
 
                 // tao moi voi thong tin user
