@@ -16,13 +16,13 @@ import com.tuonglh.coffee.samplecode.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -34,15 +34,15 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Service // annotation này cho biết class này thuộc về Service
-@Slf4j // ghi log
+@Service
+@Slf4j
 @RequiredArgsConstructor
-
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository; // inject 1 bean
+    private final UserRepository userRepository;
     private final SearchRepository searchRepository;
     private final MailService mailService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetailsService userDetailsService() {
@@ -52,6 +52,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    @Override
+    public User getByUsername(String userName) {
+        return userRepository.findByUsername(userName).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    @Override
+    public List<String> getAllRolesByUserId(Long userId) {
+        return userRepository.findAllRolesByUserId(userId);
+    }
+
+
+    @Override
     public long saveUser(UserRequestDTO requestDTO) throws MessagingException, UnsupportedEncodingException {
         User user = User.builder()
                 .firstName(requestDTO.getFirstName())
@@ -59,41 +75,44 @@ public class UserServiceImpl implements UserService {
                 .dateOfBirth(requestDTO.getDateOfBirth())
                 .email(requestDTO.getEmail())
                 .username(requestDTO.getUsername())
-                .password(requestDTO.getPassword())
+                .password(passwordEncoder.encode(requestDTO.getPassword())) // Lưu ý: Nên mã hóa password trước khi lưu nếu chưa làm
                 .status(requestDTO.getStatus())
                 .gender(requestDTO.getGender())
                 .phone(requestDTO.getPhone())
                 .type(UserType.valueOf(requestDTO.getType().toUpperCase()))
-                .addresses(convertToAddress(requestDTO.getAddresses()))
+                // .addresses(convertToAddress(requestDTO.getAddresses()))  <-- XÓA DÒNG NÀY (Gây lỗi null user_id)
                 .build();
-        requestDTO.getAddresses().forEach(address -> {
-            user.saveAddress(Address.builder()
-                            .apartmentNumber(address.getApartmentNumber())
-                            .floor(address.getFloor())
-                            .building(address.getBuilding())
-                            .country(address.getCountry())
-                            .street(address.getStreet())
-                            .city(address.getCity())
-                            .streetNumber(address.getStreetNumber())
-                            .addressType(address.getAddressType())
-                            .build());
-        });
+
+        // Chỉ sử dụng cách này để thêm address, nó sẽ tự động gán user cho address
+        if (requestDTO.getAddresses() != null) {
+            requestDTO.getAddresses().forEach(addressDTO -> {
+                user.saveAddress(Address.builder()
+                        .apartmentNumber(addressDTO.getApartmentNumber())
+                        .floor(addressDTO.getFloor())
+                        .building(addressDTO.getBuilding())
+                        .country(addressDTO.getCountry())
+                        .street(addressDTO.getStreet())
+                        .city(addressDTO.getCity())
+                        .streetNumber(addressDTO.getStreetNumber())
+                        .addressType(addressDTO.getAddressType())
+                        .build());
+            });
+        }
         userRepository.save(user);
 
-        // muốn thịt con gà thi phải có con gà
-        if(user.getId() != null){
-            // send email confirm
-            mailService.sendConfirmLink(user.getEmail(),user.getId(), "secretCode");
+        log.info("User saved successfully with id: {}", user.getId());
+        return user.getId();
+    }
 
-        }
-
-        log.info("User saved successfully");
+    @Override
+    public long saveUser(User user) {
+        userRepository.save(user);
+        log.info("User saved successfully with id: {}", user.getId());
         return user.getId();
     }
 
     @Override
     public void updateUser(long userid, UserRequestDTO requestDTO) {
-
         User user = getUserById(userid);
         user.setFirstName(requestDTO.getFirstName());
         user.setLastName(requestDTO.getLastName());
@@ -104,14 +123,12 @@ public class UserServiceImpl implements UserService {
             user.setEmail(requestDTO.getEmail());
         }
         user.setUsername(requestDTO.getUsername());
-        user.setPassword(requestDTO.getPassword());
+        user.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
         user.setStatus(requestDTO.getStatus());
         user.setType(UserType.valueOf(requestDTO.getType().toUpperCase()));
         user.setAddresses(convertToAddress(requestDTO.getAddresses()));
         userRepository.save(user);
         log.info("User updated successfully");
-        System.out.println("User updated successfully");
-
     }
 
     @Override
@@ -124,17 +141,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(long userid) {
-        //B1 delete
         userRepository.deleteById(userid);
-        //B2 ghi log ra
         log.info("User delete successfully, user id is {}", userid);
     }
 
     @Override
     public UserDetailResponse getUser(long userid) {
-        //B1 get userByID
         User user = getUserById(userid);
-        //B2 return Detail
         return UserDetailResponse.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
@@ -146,34 +159,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageResponse<?> getAllUsersWithSortBy(int pageNo, int pageSize, String sortBy) {
-        //B1 . taoj pageable
         if(pageNo > 0){
             pageNo = pageNo - 1 ;
         }
 
         List<Sort.Order> sorts = new ArrayList<>();
-        // nếu có giá trị sortBy mới xử lý
         if(StringUtils.hasLength(sortBy)){
-
-            //firstName : asc|desc
-            Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)"); // có 3 group
+            Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)");
             Matcher matcher = pattern.matcher(sortBy);
-
             if(matcher.find()){
-                //  xử lý đk sort
-                if(matcher.group(3).equalsIgnoreCase("acs")) {// truyền vào group 3 là asc hoặc desc
+                if(matcher.group(3).equalsIgnoreCase("acs")) {
                     sorts.add(new Sort.Order(Sort.Direction.ASC, matcher.group(1)));
                 }else{
                     sorts.add(new Sort.Order(Sort.Direction.DESC, matcher.group(1)));
                 }
             }
-
         }
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sorts)); // truyền field, firstName , lastName trong Entity
-        //B2 Tra ve Page
-        Page<User> users = userRepository.findAll(pageable);// find theo pageable
-        //B3 boc tach user de chuyen ve list
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sorts));
+        Page<User> users = userRepository.findAll(pageable);
 
         List<UserDetailResponse> responses = users.stream().map(user -> UserDetailResponse.builder()
                         .firstName(user.getFirstName())
@@ -181,14 +185,14 @@ public class UserServiceImpl implements UserService {
                         .email(user.getEmail())
                         .phone(user.getPhone())
                         .build())
-                .toList(); // toList là return về đây là 1 list của UserDetailResponse
+                .toList();
 
         return PageResponse.builder()
                 .pageNo(pageNo)
                 .pageSize(pageSize)
                 .totalPage(users.getTotalPages())
                 .items(responses)
-                .build();// toList là return về đây là 1 list của UserDetailResponse
+                .build();
     }
 
     @Override
@@ -197,15 +201,14 @@ public class UserServiceImpl implements UserService {
             pageNo = pageNo - 1 ;
         }
         if (sorts == null) {
-            sorts = new String[0]; // để for-each & Sort.by(...) không bị NPE
+            sorts = new String[0];
         }
         List<Sort.Order> orders = new ArrayList<>();
         for(String sortBy : sorts){
-            Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)"); // có 3 group
+            Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)");
             Matcher matcher = pattern.matcher(sortBy);
             if(matcher.find()){
-                //  xử lý đk sort
-                if(matcher.group(3).equalsIgnoreCase("asc")) {// truyền vào group 3 là asc hoặc desc
+                if(matcher.group(3).equalsIgnoreCase("asc")) {
                     orders.add(new Sort.Order(Sort.Direction.ASC, matcher.group(1)));
                 }else{
                     orders.add(new Sort.Order(Sort.Direction.DESC, matcher.group(1)));
@@ -213,10 +216,8 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sorts)); // truyền field, firstName , lastName trong Entity
-        //B2 Tra ve Page
-        Page<User> users = userRepository.findAll(pageable);// find theo pageable
-        //B3 boc tach user de chuyen ve list
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sorts));
+        Page<User> users = userRepository.findAll(pageable);
 
         List<UserDetailResponse> responses = users.stream().map(user -> UserDetailResponse.builder()
                         .firstName(user.getFirstName())
@@ -224,7 +225,7 @@ public class UserServiceImpl implements UserService {
                         .email(user.getEmail())
                         .phone(user.getPhone())
                         .build())
-                .toList(); // toList là return về đây là 1 list của UserDetailResponse
+                .toList();
 
         return PageResponse.builder()
                 .pageNo(pageNo)
@@ -232,15 +233,6 @@ public class UserServiceImpl implements UserService {
                 .totalPage(users.getTotalPages())
                 .items(responses)
                 .build();
-
-//        return users.stream().map(user -> UserDetailResponse.builder()
-//                        .firstName(user.getFirstName())
-//                        .lastName(user.getLastName())
-//                        .email(user.getEmail())
-//                        .phone(user.getPhone())
-//                        .build())
-//                .toList(); // toList là return về đây là 1 list của UserDetailResponse
-
     }
 
     @Override
@@ -251,15 +243,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void confirmUser(long userId, String secretCode) {
         log.info("Confirm userId = {}, secretCode = {}" , userId, secretCode);
-
     }
 
     private Set<Address> convertToAddress(Set<AddressDTO> addresses) {
         if (addresses == null || addresses.isEmpty()) return java.util.Collections.emptySet();
 
         Set<Address> result = new HashSet<>();
-
-        // stream api add address vào trong hashset result
         addresses.forEach(address ->
                     result.add(Address.builder()
                             .apartmentNumber(address.getApartmentNumber())
@@ -278,6 +267,6 @@ public class UserServiceImpl implements UserService {
 
     private User getUserById(long userId) {
         return userRepository.findById(userId)
-                .orElseThrow( () -> new ResourceNotFoundException("User not found") ) ;// tìm được thì findBy , còn ko thì User not found
+                .orElseThrow( () -> new ResourceNotFoundException("User not found") ) ;
     }
 }

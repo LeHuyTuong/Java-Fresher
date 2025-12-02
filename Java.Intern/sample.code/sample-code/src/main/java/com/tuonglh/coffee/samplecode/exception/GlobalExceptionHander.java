@@ -2,6 +2,9 @@ package com.tuonglh.coffee.samplecode.exception;
 
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -61,6 +64,24 @@ public class GlobalExceptionHander {
         if(e instanceof MethodArgumentTypeMismatchException){
             errorResponse.setMessage("Failed to convert value of type");
         }
+        return errorResponse;
+    }
+
+    @ExceptionHandler({
+            UsernameNotFoundException.class,
+            BadCredentialsException.class,
+            InternalAuthenticationServiceException.class
+    })
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) // Trả về 401 thay vì 403
+    public ErrorResponse handleAuthException(Exception e, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setTimestamp(new Date());
+        errorResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+        errorResponse.setPath(request.getDescription(false).replace("uri=", ""));
+        errorResponse.setError("Authentication Failed");
+        // Bạn có thể hard-code message để bảo mật hơn, tránh lộ user tồn tại hay không
+        errorResponse.setMessage("Username hoặc mật khẩu không đúng");
+
         return errorResponse;
     }
 

@@ -14,6 +14,19 @@ services:
       - backend
     restart: unless-stopped
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    hostname: redis
+    ports:
+      - '6379:6379'
+    environment:
+      - ALLOW_EMPTY_PASSWORD:yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB;FLUSHALL
+    networks:
+      - backend
+
+
 networks:
   backend:
     driver: bridge

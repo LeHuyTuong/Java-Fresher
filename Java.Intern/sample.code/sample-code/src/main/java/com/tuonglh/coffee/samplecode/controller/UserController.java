@@ -51,7 +51,6 @@ public class UserController {
             )
     }) */  // mô tả api
     private final UserService userService;
-
 //    @PostMapping(value="/")
 //    public ResponseData<Integer> createUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
 //        System.out.println("Request createUser" + userRequestDTO.getFirstName());
@@ -63,20 +62,13 @@ public class UserController {
 //        return new ResponseData<>(HttpStatus.CREATED.value(), Translator.toLocale("user.add.success"), 1 );
 //    }
 
-    @Operation(summary = "Add user", description = "API create new user")
-    @PostMapping(value = "/{userId}" )
-    //@RequestMapping(method = RequestMethod.POST, path = "/" , headers = "apiKey=v1.0")
-    public ResponseData<?> addUser(@Valid @RequestBody UserRequestDTO userDTO) throws MessagingException, UnsupportedEncodingException {
-        log.info("Request add user, {}, {}", userDTO.getFirstName(), userDTO.getLastName());
-         log.info("Request add userFirstName:  {}" , userDTO.getFirstName());
-         //return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Can not create user ");
-         try{
-             long UserId = userService.saveUser(userDTO);
-             return new ResponseData<>(HttpStatus.CREATED.value(),Translator.toLocale("user.add.success"), 1 );
-         }catch(ResourceNotFoundException e){
-             log.error("errorMessage = {}", e.getMessage(), e.getCause());
-             return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Save failed ");
-         }
+
+    @Operation(method = "POST", summary = "Add new user", description = "Send a request via this API to create new user")
+    @PostMapping(value = "/")
+    public ResponseData<Long> addUser(@Valid @RequestBody UserRequestDTO request) throws MessagingException, UnsupportedEncodingException {
+        log.info("Request add user, {} {}", request.getFirstName(), request.getLastName());
+        long userId = userService.saveUser(request);
+        return new ResponseData<>(HttpStatus.CREATED.value(), Translator.toLocale("user.add.success"), userId);
     }
 
     @Operation(summary = "Update all user", description = "API Update user")

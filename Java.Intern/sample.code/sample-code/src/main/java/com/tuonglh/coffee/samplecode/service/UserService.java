@@ -4,6 +4,7 @@ import com.tuonglh.coffee.samplecode.dto.request.UserRequestDTO;
 import com.tuonglh.coffee.samplecode.dto.response.PageResponse;
 import com.tuonglh.coffee.samplecode.dto.response.UserDetailResponse;
 import com.tuonglh.coffee.samplecode.dto.validation.enums.UserStatus;
+import com.tuonglh.coffee.samplecode.model.User;
 import jakarta.mail.MessagingException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -14,7 +15,15 @@ public interface UserService {
 
     UserDetailsService userDetailsService(); // Cung cấp UserDetailsService để cấu hình trong SecurityConfig
 
+    User getUserByEmail(String email);
+
+    User getByUsername(String userName);
+
+    List<String> getAllRolesByUserId(Long userId);
+
     long saveUser(UserRequestDTO requestDTO) throws MessagingException, UnsupportedEncodingException;
+
+    long saveUser(User user);
 
     void updateUser(long Userid, UserRequestDTO requestDTO);
 
