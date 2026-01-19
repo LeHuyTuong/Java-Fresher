@@ -9,7 +9,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/sampledbJava?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true
     username: root
-    password: Tuong2005@
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10
@@ -66,9 +66,9 @@ spring:
   # --- JWT Configuration ---
   jwt:
     expiryTime: 86400000  # 24 hours in milliseconds
-    secretKey: VGEtQ2FuLVBoYWktQ28tTW90LVNlY3JldEtleS1EdS1EYWktRGUtQmFvLU1hdC1DaG8tVW5nLUR1bmctTmF5LTEyMzQ1Njc4OTA=
-    refreshKey: 5ef18408b868427f9891f7de972b4f111dfa196516ae740e00df84c666238dcf=
-    resetKey: 5ef18408b868427f9891f7de972b4f111dfa596516a77e0e00df84c666238dcf=
+    secretKey: ${JWT_SECRET_KEY}
+    refreshKey: ${JWT_REFRESH_KEY}
+    resetKey: ${JWT_RESET_KEY}
 
   # --- OpenAPI (Swagger) Configuration ---
   open:
