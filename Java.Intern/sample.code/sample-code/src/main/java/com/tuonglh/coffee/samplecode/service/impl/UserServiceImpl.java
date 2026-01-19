@@ -14,12 +14,14 @@ import com.tuonglh.coffee.samplecode.repository.UserRepository;
 import com.tuonglh.coffee.samplecode.service.MailService;
 import com.tuonglh.coffee.samplecode.service.UserService;
 import jakarta.mail.MessagingException;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,8 +43,9 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final SearchRepository searchRepository;
-    private final MailService mailService;
+//    private final MailService mailService;
     private final PasswordEncoder passwordEncoder;
+    private final KafkaTemplate<String,String> kafkaTemplate;
 
     @Override
     public UserDetailsService userDetailsService() {
@@ -68,6 +71,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public long saveUser(UserRequestDTO requestDTO) throws MessagingException, UnsupportedEncodingException {
         User user = User.builder()
                 .firstName(requestDTO.getFirstName())
@@ -98,9 +102,15 @@ public class UserServiceImpl implements UserService {
                         .build());
             });
         }
-        userRepository.save(user);
-
+        User result = userRepository.save(user);
         log.info("User saved successfully with id: {}", user.getId());
+
+        if(result != null){
+            // Gửi email xác nhận (chuyển sang dùng Kafka);
+            String message = String.format("%s,%s,%s", user.getEmail(), result.getId(), "code@123");
+            // mới sản xuất ra producer thôi
+            kafkaTemplate.send("confirm-account-topic", message);
+        }
         return user.getId();
     }
 

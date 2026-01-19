@@ -1,44 +1,81 @@
-spring.application.name=sample-code
-  
+server:
+  port: 8084
+
+spring:
+  application:
+    name: sample-code
+
   # --- DataSource (MySQL) ---
-spring.datasource.url=jdbc:mysql://localhost:3306/sampledbJava?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-spring.datasource.username=root
-spring.datasource.password=Tuong2005@
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-  
+  datasource:
+    url: jdbc:mysql://localhost:3306/sampledbJava?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+    username: root
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: HikariConnPool
+
   # --- JPA (MySQL) ---
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
-  
-  # --- Hikari---
-spring.datasource.hikari.maximum-pool-size=10
-spring.datasource.hikari.minimum-idle=10
-spring.datasource.hikari.connection-timeout=30000
-spring.datasource.hikari.idle-timeout=600000
-spring.datasource.hikari.max-lifetime=1800000
-spring.datasource.hikari.pool-name=HikariConnPool
-  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  kafka:
+    bootstrap-servers: localhost:29092
   # --- Mail (Gmail SMTP) ---
-spring.mail.host=smtp.gmail.com
-spring.mail.port=587
-spring.mail.username=${MAIL_USERNAME}
-spring.mail.password=${MAIL_PASSWORD}
-spring.mail.properties.mail.smtp.auth=true
-spring.mail.properties.mail.smtp.starttls.enable=true
-spring.mail.from=monsterminecraft2005@gmail.com
-spring.servlet.multipart.max-file-size=25MB
-spring.servlet.multipart.max-request-size=30MB
-  
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    from: monsterminecraft2005@gmail.com
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  # --- Servlet (Multipart) ---
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 30MB
+
+  main:
+    allow-bean-definition-overriding: true
+
+  # --- Redis ---
+  redis:
+    host: localhost
+    port: 6379
+
+  # --- MongoDB (For Audit Logs) ---
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/sample_audit_db
+
   # --- JWT Configuration ---
-  # Expiry time in milliseconds (e.g., 86400000 = 24 hours)
-jwt.expiryTime=86400000
-  # The secret key must be Base64 encoded.
-jwt.secretKey=VGEtQ2FuLVBoYWktQ28tTW90LVNlY3JldEtleS1EdS1EYWktRGUtQmFvLU1hdC1DaG8tVW5nLUR1bmctTmF5LTEyMzQ1Njc4OTA=
-  
+  jwt:
+    expiryTime: 86400000  # 24 hours in milliseconds
+    secretKey: ${JWT_SECRET_KEY}
+    refreshKey: ${JWT_REFRESH_KEY}
+    resetKey: ${JWT_RESET_KEY}
+
   # --- OpenAPI (Swagger) Configuration ---
-open.api.title=Sample API
-open.api.version=1.0.0
-open.api.description=API documentation for the sample application.
-open.api.serverUrl=http://localhost:8080
-open.api.serverName=Local Development Server
+  open:
+    api:
+      title: Sample API
+      version: 1.0.0
+      description: API documentation for the sample application.
+      serverUrl: http://localhost:8084
+      serverName: Local Development Server
+  

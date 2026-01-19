@@ -1,0 +1,7 @@
+# Default config - dùng khi không chỉ định profile
+spring:
+  profiles:
+    active: dev
+
+  kafka:
+    bootstrap-servers: localhost:29092

@@ -1,0 +1,29 @@
+
+Kafka gồm có 6 cái
+1.Producer là thành phần chịu trách nhiệm gửi dữ liệu vào Kafka cluster.
+Producer tạo ra các bản ghi (records) và gửi chúng đến các chủ đề (topics) trong Kafka.
+
+2.Consumer là thành phần chịu trách nhiệm đọc dữ liệu từ Kafka cluster.
+Consumer đăng ký để nhận các bản ghi từ các chủ đề và xử lý chúng theo nhu cầu của ứng dụng.
+
+3.Broker là các máy chủ trong Kafka cluster chịu trách nhiệm lưu trữ và quản lý dữ liệu.
+Mỗi broker có thể xử lý hàng ngàn bản ghi và cung cấp khả năng mở rộng cho hệ thống.
+
+4.Topic là một kênh logic trong Kafka nơi các bản ghi được gửi và nhận.
+ Mỗi topic có thể được chia thành nhiều phân vùng (partitions) để tăng khả năng xử lý song song và hiệu suất.
+
+5.Partition là một phần của topic, nơi các bản ghi được lưu trữ theo thứ tự.
+ Mỗi partition có thể được lưu trữ trên các broker khác nhau, giúp tăng khả năng mở rộng và độ tin cậy của hệ thống.
+
+6.Zookeeper là một dịch vụ quản lý cấu hình và đồng bộ hóa phân tán được sử dụng bởi Kafka để theo dõi trạng thái của các broker
+ và quản lý các thông tin về topics và partitions.
+Zookeeper giúp đảm bảo rằng Kafka hoạt động một cách nhất quán và ổn định trong môi trường phân tán.
+
+
+Khái niệm	        Giải thích	           Ví dụ
+Producer	        Thằng gửi message	   Service đăng ký user
+Consumer	        Thằng nhận message	    Service gửi email
+Topic	            "Kênh" chứa message 	confirm-account-topic
+Broker	            Kafka server	        localhost:29092
+Partition	          Chia topic thành nhiều phần	3 partitions = 3 phần
+Replica	                Bản sao backup	          replica=3 = 3 bản copy
