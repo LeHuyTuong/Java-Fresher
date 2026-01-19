@@ -1,6 +1,5 @@
 package com.tuonglh.coffee.samplecode.configuration;
 
-
 import com.tuonglh.coffee.samplecode.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -44,12 +43,13 @@ public class AppConfig {
 
     private final UserService userService;
     private final PreFilter preFilter;
-    private final String[] WHITE_LIST = {"/auth/**",
+    private final String[] WHITE_LIST = { "/auth/**",
             "/user/**",
+            "/api/test/**",
             "/error",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/swagger-ui.html", "/webjars/**"};
+            "/swagger-ui.html", "/webjars/**" };
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -85,8 +85,7 @@ public class AppConfig {
                 }))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(WHITE_LIST).permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(provider(getPasswordEncoder()))
                 .addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class);
